@@ -48,14 +48,28 @@ namespace SharePoint.Authentication
             return false;
         }
 
-        protected override async Task<SharePointContext> LoadSharePointContext(HttpContextBase httpContext)
+        protected override async Task<SharePointContext> LoadSharePointContextAsync(HttpContextBase httpContext)
         {
-            return await _sessionProvider?.Get(SPContextKey);
+            if (_sessionProvider == null) return null;
+
+            return await _sessionProvider.GetAsync(SPContextKey);
         }
 
-        protected override async Task SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
+        protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)
         {
-            await _sessionProvider?.Set(SPContextKey, spContext as SharePointHighTrustContext);
+            if (_sessionProvider == null) return;
+
+            await _sessionProvider?.SetAsync(SPContextKey, spContext as SharePointHighTrustContext);
+        }
+
+        protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
+        {
+            return _sessionProvider?.Get(SPContextKey);
+        }
+
+        protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
+        {
+            _sessionProvider?.SetAsync(SPContextKey, spContext as SharePointHighTrustContext);
         }
     }
 }

@@ -67,12 +67,40 @@ namespace SharePoint.Authentication
             return false;
         }
 
-        protected override async Task<SharePointContext> LoadSharePointContext(HttpContextBase httpContext)
+        protected override async Task<SharePointContext> LoadSharePointContextAsync(HttpContextBase httpContext)
         {
-            return await _sessionProvider?.Get(SPContextKey);
+            if (_sessionProvider == null) return null;
+            
+            return await _sessionProvider.GetAsync(SPContextKey);
         }
 
-        protected override async Task SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
+        protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)
+        {
+            SharePointAcsContext spAcsContext = spContext as SharePointAcsContext;
+
+            if (spAcsContext != null)
+            {
+                HttpCookie spCacheKeyCookie = new HttpCookie(SPCacheKeyKey)
+                {
+                    Value = spAcsContext.CacheKey,
+                    Secure = true,
+                    HttpOnly = true
+                };
+
+                httpContext.Response.AppendCookie(spCacheKeyCookie);
+            }
+            
+            if (_sessionProvider == null) return;
+
+            await _sessionProvider.SetAsync(SPContextKey, spAcsContext);
+        }
+
+        protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
+        {
+            return _sessionProvider?.Get(SPContextKey);
+        }
+
+        protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
         {
             SharePointAcsContext spAcsContext = spContext as SharePointAcsContext;
 
@@ -88,7 +116,7 @@ namespace SharePoint.Authentication
                 httpContext.Response.AppendCookie(spCacheKeyCookie);
             }
 
-            await _sessionProvider.Set(SPContextKey, spAcsContext);
+            _sessionProvider.Set(SPContextKey, spAcsContext);
         }
     }
 }
