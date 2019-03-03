@@ -1,6 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Authentication.ACS", "SharePoint.Authentication.ACS\SharePoint.Authentication.ACS.csproj", "{76ABD293-65E1-4F3E-ACD7-B082605D59F0}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Authentication", "SharePoint.Authentication\SharePoint.Authentication.csproj", "{76ABD293-65E1-4F3E-ACD7-B082605D59F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +15,11 @@ Global
 		{76ABD293-65E1-4F3E-ACD7-B082605D59F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76ABD293-65E1-4F3E-ACD7-B082605D59F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76ABD293-65E1-4F3E-ACD7-B082605D59F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A3B11810-0B44-4D99-B558-F3D124CDF0AE}
 	EndGlobalSection
 EndGlobal
