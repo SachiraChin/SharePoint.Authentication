@@ -1,7 +1,4 @@
-﻿using System.Net.Http.Headers;
-using Microsoft.SharePoint.Client;
-
-namespace SharePoint.Authentication.ACS
+﻿namespace SharePoint.Authentication
 {
     public class ACSTokenHelper : TokenHelper
     {

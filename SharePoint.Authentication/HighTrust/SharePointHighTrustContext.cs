@@ -1,7 +1,7 @@
 using System;
 using System.Security.Principal;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     /// <summary>
     /// Encapsulates all the information from SharePoint in HighTrust mode.

@@ -3,9 +3,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
-using SharePoint.Authentication.ACS.Tokens;
+using SharePoint.Authentication.Tokens;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     /// <summary>
     /// Default provider for SharePointAcsContext.

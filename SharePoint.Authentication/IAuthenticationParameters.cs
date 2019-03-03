@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.SecurityTokenService;
 
 // ReSharper disable InconsistentNaming
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     public interface IAuthenticationParameters
     {

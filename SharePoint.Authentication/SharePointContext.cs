@@ -2,7 +2,7 @@ using System;
 using System.Web;
 using Microsoft.SharePoint.Client;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     /// <summary>
     /// Encapsulates all the information from SharePoint.

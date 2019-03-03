@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     /// <summary>
     /// Provides SharePointContext instances.

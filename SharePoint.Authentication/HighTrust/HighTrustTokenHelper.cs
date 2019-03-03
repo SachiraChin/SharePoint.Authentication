@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     public class HighTrustTokenHelper : TokenHelper
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Net;
 using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
-using SharePoint.Authentication.ACS.Tokens;
+using SharePoint.Authentication.Tokens;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     /// <summary>
     /// Encapsulates all the information from SharePoint in ACS mode.

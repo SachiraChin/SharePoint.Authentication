@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using Microsoft.IdentityModel.SecurityTokenService;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     public abstract class HighTrustAuthenticationParameters : IAuthenticationParameters
     {

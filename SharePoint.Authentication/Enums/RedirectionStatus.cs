@@ -1,4 +1,4 @@
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     /// <summary>
     /// Redirection status.

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     public interface ISessionProvider<T>
     {

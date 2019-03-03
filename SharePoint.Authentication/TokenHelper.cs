@@ -18,12 +18,12 @@ using Microsoft.IdentityModel.S2S.Tokens;
 using Microsoft.IdentityModel.SecurityTokenService;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
-using SharePoint.Authentication.ACS.Tokens;
+using SharePoint.Authentication.Tokens;
 using AudienceRestriction = Microsoft.IdentityModel.Tokens.AudienceRestriction;
 using AudienceUriValidationFailedException = Microsoft.IdentityModel.Tokens.AudienceUriValidationFailedException;
 using SecurityTokenHandlerConfiguration = Microsoft.IdentityModel.Tokens.SecurityTokenHandlerConfiguration;
 
-namespace SharePoint.Authentication.ACS
+namespace SharePoint.Authentication
 {
     public class TokenHelper
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{76ABD293-65E1-4F3E-ACD7-B082605D59F0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharePoint.Authentication.ACS</RootNamespace>
-    <AssemblyName>SharePoint.Authentication.ACS</AssemblyName>
+    <RootNamespace>SharePoint.Authentication</RootNamespace>
+    <AssemblyName>SharePoint.Authentication</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

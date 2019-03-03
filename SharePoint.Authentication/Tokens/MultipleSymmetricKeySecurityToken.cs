@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens;
 using Microsoft.IdentityModel;
 using Microsoft.IdentityModel.S2S.Tokens;
 
-namespace SharePoint.Authentication.ACS.Tokens
+namespace SharePoint.Authentication.Tokens
 {
     /// <summary>
     /// Represents a security token which contains multiple security keys that are generated using symmetric algorithms.
