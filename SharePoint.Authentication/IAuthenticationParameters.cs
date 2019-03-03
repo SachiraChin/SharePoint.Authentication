@@ -8,10 +8,10 @@ namespace SharePoint.Authentication
     public interface IAuthenticationParameters
     {
         string ClientId { get; }
+        string ClientSecret { get; }
         string IssuerId { get; }
         string HostedAppHostNameOverride { get; }
         string HostedAppHostName { get; }
-        string ClientSecret { get; }
         string SecondaryClientSecret { get; }
         string Realm { get; }
         string ServiceNamespace { get; }

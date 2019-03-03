@@ -137,8 +137,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ACS\ACSAuthenticationParameters.cs" />
-    <Compile Include="ACS\ACSTokenHelper.cs" />
+    <Compile Include="ACS\AcsAuthenticationParameters.cs" />
+    <Compile Include="ACS\AcsTokenHelper.cs" />
     <Compile Include="HighTrust\HighTrustAuthenticationParameters.cs" />
     <Compile Include="HighTrust\HighTrustTokenHelper.cs" />
     <Compile Include="IAuthenticationParameters.cs" />

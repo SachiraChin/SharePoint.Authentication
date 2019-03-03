@@ -16,7 +16,7 @@ namespace SharePoint.Authentication
         private const string SPCacheKeyKey = "SPCacheKey";
         private readonly ISessionProvider<SharePointAcsContext> _sessionProvider;
 
-        public SharePointAcsContextProvider(ACSTokenHelper tokenHelper, ISessionProvider<SharePointAcsContext> sessionProvider) : base(tokenHelper)
+        public SharePointAcsContextProvider(AcsTokenHelper tokenHelper, ISessionProvider<SharePointAcsContext> sessionProvider) : base(tokenHelper)
         {
             _sessionProvider = sessionProvider;
         }

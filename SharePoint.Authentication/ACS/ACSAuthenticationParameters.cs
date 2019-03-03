@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.SecurityTokenService;
 
 namespace SharePoint.Authentication
 {
-    public abstract class ACSAuthenticationParameters : IAuthenticationParameters
+    public abstract class AcsAuthenticationParameters : IAuthenticationParameters
     {
         public abstract string ClientId { get; }
         public abstract string IssuerId { get; }

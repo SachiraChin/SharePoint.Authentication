@@ -1,12 +1,9 @@
 ﻿namespace SharePoint.Authentication
 {
-    public class ACSTokenHelper : TokenHelper
+    public class AcsTokenHelper : TokenHelper
     {
-        private readonly ACSAuthenticationParameters _authenticationParameters;
-
-        public ACSTokenHelper(ACSAuthenticationParameters authenticationParameters) : base(authenticationParameters)
+        public AcsTokenHelper(AcsAuthenticationParameters authenticationParameters) : base(authenticationParameters)
         {
-            _authenticationParameters = authenticationParameters;
         }
     }
 }

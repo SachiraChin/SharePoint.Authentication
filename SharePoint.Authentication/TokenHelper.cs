@@ -732,27 +732,7 @@ namespace SharePoint.Authentication
         {
             _authenticationParameters = authenticationParameters;
         }
-
-        //private TokenHelper(string clientId, string clientSecret, string secondaryClientSecret, string issuerId, string hostedAppHostNameOverride, string hostedAppHostName, string realm, string serviceNamespace,
-        //    string clientSigningCertificatePath, string clientSigningCertificatePassword, X509Certificate2 clientCertificate, X509SigningCredentials signingCredentials)
-        //{
-        //    ClientId = !string.IsNullOrWhiteSpace(clientId) ? clientId : string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("ClientId")) ? WebConfigurationManager.AppSettings.Get("HostedAppName") : WebConfigurationManager.AppSettings.Get("ClientId");
-        //    IssuerId = !string.IsNullOrWhiteSpace(issuerId) ? issuerId : string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("IssuerId")) ? ClientId : WebConfigurationManager.AppSettings.Get("IssuerId");
-        //    HostedAppHostNameOverride = !string.IsNullOrWhiteSpace(hostedAppHostNameOverride) ? hostedAppHostNameOverride : WebConfigurationManager.AppSettings.Get("HostedAppHostNameOverride");
-        //    HostedAppHostName = !string.IsNullOrWhiteSpace(hostedAppHostName) ? hostedAppHostName : WebConfigurationManager.AppSettings.Get("HostedAppHostName");
-        //    ClientSecret = !string.IsNullOrWhiteSpace(clientSecret) ? clientSecret : string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("ClientSecret")) ? WebConfigurationManager.AppSettings.Get("HostedAppSigningKey") : WebConfigurationManager.AppSettings.Get("ClientSecret");
-        //    SecondaryClientSecret = !string.IsNullOrWhiteSpace(secondaryClientSecret) ? secondaryClientSecret : WebConfigurationManager.AppSettings.Get("SecondaryClientSecret");
-        //    Realm = !string.IsNullOrWhiteSpace(realm) ? realm : WebConfigurationManager.AppSettings.Get("Realm");
-        //    ServiceNamespace = !string.IsNullOrWhiteSpace(serviceNamespace) ? serviceNamespace : WebConfigurationManager.AppSettings.Get("Realm");
-
-        //    ClientSigningCertificatePath = !string.IsNullOrWhiteSpace(clientSigningCertificatePath) ? clientSigningCertificatePath : WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePath");
-        //    ClientSigningCertificatePassword = !string.IsNullOrWhiteSpace(clientSigningCertificatePassword) ? clientSigningCertificatePassword : WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePassword");
-
-        //    ClientCertificate = clientCertificate ?? ((string.IsNullOrEmpty(ClientSigningCertificatePath) || string.IsNullOrEmpty(ClientSigningCertificatePassword)) ? null : new X509Certificate2(ClientSigningCertificatePath, ClientSigningCertificatePassword));
-        //    SigningCredentials = signingCredentials ?? ((ClientCertificate == null) ? null : new X509SigningCredentials(ClientCertificate, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest));
-        //}
-
-
+        
         #endregion
 
         #region private methods
