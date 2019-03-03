@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="$PROJECT_DIR$" t="IncludeFlat">
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="SharePoint.Authetication.ACS" t="IncludeRecursive">
+        <e p="ACS" t="Include">
+          <e p="SharePointAcsContext.cs" t="Include" />
+          <e p="SharePointAcsContextProvider.cs" t="Include" />
+        </e>
+        <e p="app.config" t="Include" />
+        <e p="AuthenticationParameters" t="Include">
+          <e p="HighTrustAuthenticationParameters.cs" t="Include" />
+          <e p="LowTrustAuthenticationParameters.cs" t="Include" />
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Enums" t="Include">
+          <e p="RedirectionStatus.cs" t="Include" />
+        </e>
+        <e p="HighTrust" t="Include">
+          <e p="SharePointHighTrustContext.cs" t="Include" />
+          <e p="SharePointHighTrustContextProvider.cs" t="Include" />
+        </e>
+        <e p="IAuthenticationParameters.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="packages.config" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="SharePoint.Authetication.ACS.csproj" t="IncludeRecursive" />
+        <e p="SharePointContext.cs" t="Include" />
+        <e p="SharePointContextProvider.cs" t="Include" />
+        <e p="TokenHelper.cs" t="Include" />
+        <e p="TokenHelpers" t="Include">
+          <e p="HighTrustTokenHelper.cs" t="Include" />
+          <e p="LowTrustTokenHelper.cs" t="Include" />
+        </e>
+        <e p="Tokens" t="Include">
+          <e p="MultipleSymmetricKeySecurityToken.cs" t="Include" />
+          <e p="SharePointContextToken.cs" t="Include" />
+        </e>
+      </e>
+      <e p="SharePoint.Authetication.sln" t="IncludeFlat" />
+    </e>
+    <e p="$USER_HOME$/Library/Caches/Rider2018.2/extResources" t="IncludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2018.2/resharper-host/local/Transient/ReSharperHost/v182/SolutionCaches/_SharePoint.Authetication.1907508175.00" t="ExcludeRecursive" />
+  </component>
+</project>
