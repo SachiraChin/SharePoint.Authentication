@@ -1,7 +1,7 @@
 using System;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using System.Web;
-using SharePoint.Authentication.ACS.TokenHelpers;
 
 namespace SharePoint.Authentication.ACS
 {
@@ -11,6 +11,12 @@ namespace SharePoint.Authentication.ACS
     public class SharePointHighTrustContextProvider : SharePointContextProvider
     {
         private const string SPContextKey = "SPContext";
+        private readonly ISessionProvider<SharePointHighTrustContext> _sessionProvider;
+
+        public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper, ISessionProvider<SharePointHighTrustContext> sessionProvider) : base(tokenHelper)
+        {
+            _sessionProvider = sessionProvider;
+        }
 
         protected override SharePointContext CreateSharePointContext(Uri spHostUrl, Uri spAppWebUrl, string spLanguage, string spClientTag, string spProductNumber, HttpRequestBase httpRequest)
         {
@@ -42,19 +48,14 @@ namespace SharePoint.Authentication.ACS
             return false;
         }
 
-        protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
+        protected override async Task<SharePointContext> LoadSharePointContext(HttpContextBase httpContext)
         {
-            //return httpContext.Session[SPContextKey] as SharePointHighTrustContext;
-            return null;
+            return await _sessionProvider?.Get(SPContextKey);
         }
 
-        protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
+        protected override async Task SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
         {
-            //httpContext.Session[SPContextKey] = spContext as SharePointHighTrustContext;
-        }
-
-        public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper) : base(tokenHelper)
-        {
+            await _sessionProvider?.Set(SPContextKey, spContext as SharePointHighTrustContext);
         }
     }
 }

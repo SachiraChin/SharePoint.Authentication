@@ -5,23 +5,24 @@
       <e p="packages" t="ExcludeRecursive" />
       <e p="SharePoint.Authentication.ACS" t="IncludeRecursive">
         <e p="ACS" t="Include">
+          <e p="ACSAuthenticationParameters.cs" t="Include" />
+          <e p="ACSTokenHelper.cs" t="Include" />
           <e p="SharePointAcsContext.cs" t="Include" />
           <e p="SharePointAcsContextProvider.cs" t="Include" />
         </e>
         <e p="app.config" t="Include" />
-        <e p="AuthenticationParameters" t="Include">
-          <e p="HighTrustAuthenticationParameters.cs" t="Include" />
-          <e p="LowTrustAuthenticationParameters.cs" t="Include" />
-        </e>
         <e p="bin" t="ExcludeRecursive" />
         <e p="Enums" t="Include">
           <e p="RedirectionStatus.cs" t="Include" />
         </e>
         <e p="HighTrust" t="Include">
+          <e p="HighTrustAuthenticationParameters.cs" t="Include" />
+          <e p="HighTrustTokenHelper.cs" t="Include" />
           <e p="SharePointHighTrustContext.cs" t="Include" />
           <e p="SharePointHighTrustContextProvider.cs" t="Include" />
         </e>
         <e p="IAuthenticationParameters.cs" t="Include" />
+        <e p="ISessionProvider.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive" />
         <e p="packages.config" t="Include" />
         <e p="Properties" t="Include">
@@ -31,10 +32,6 @@
         <e p="SharePointContext.cs" t="Include" />
         <e p="SharePointContextProvider.cs" t="Include" />
         <e p="TokenHelper.cs" t="Include" />
-        <e p="TokenHelpers" t="Include">
-          <e p="HighTrustTokenHelper.cs" t="Include" />
-          <e p="LowTrustTokenHelper.cs" t="Include" />
-        </e>
         <e p="Tokens" t="Include">
           <e p="MultipleSymmetricKeySecurityToken.cs" t="Include" />
           <e p="SharePointContextToken.cs" t="Include" />

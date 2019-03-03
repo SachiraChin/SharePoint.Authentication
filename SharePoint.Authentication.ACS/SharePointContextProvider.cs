@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
 
@@ -161,7 +162,7 @@ namespace SharePoint.Authentication.ACS
         /// </summary>
         /// <param name="httpRequest">The HTTP request.</param>
         /// <returns>The SharePointContext instance. Returns <c>null</c> if errors occur.</returns>
-        public SharePointContext CreateSharePointContext(HttpRequest httpRequest)
+        public async Task<SharePointContext> CreateSharePointContext(HttpRequest httpRequest)
         {
             return CreateSharePointContext(new HttpRequestWrapper(httpRequest));
         }
@@ -171,7 +172,7 @@ namespace SharePoint.Authentication.ACS
         /// </summary>
         /// <param name="httpContext">The HTTP context.</param>
         /// <returns>The SharePointContext instance. Returns <c>null</c> if not found and a new instance can't be created.</returns>
-        public SharePointContext GetSharePointContext(HttpContextBase httpContext)
+        public async Task<SharePointContext> GetSharePointContext(HttpContextBase httpContext)
         {
             if (httpContext == null)
             {
@@ -184,7 +185,7 @@ namespace SharePoint.Authentication.ACS
                 return null;
             }
 
-            SharePointContext spContext = LoadSharePointContext(httpContext);
+            SharePointContext spContext = await LoadSharePointContext(httpContext);
 
             if (spContext == null || !ValidateSharePointContext(spContext, httpContext))
             {
@@ -204,9 +205,9 @@ namespace SharePoint.Authentication.ACS
         /// </summary>
         /// <param name="httpContext">The HTTP context.</param>
         /// <returns>The SharePointContext instance. Returns <c>null</c> if not found and a new instance can't be created.</returns>
-        public SharePointContext GetSharePointContext(HttpContext httpContext)
+        public async Task<SharePointContext> GetSharePointContext(HttpContext httpContext)
         {
-            return GetSharePointContext(new HttpContextWrapper(httpContext));
+            return await GetSharePointContext(new HttpContextWrapper(httpContext));
         }
 
         /// <summary>
@@ -234,7 +235,7 @@ namespace SharePoint.Authentication.ACS
         /// </summary>
         /// <param name="httpContext">The HTTP context.</param>
         /// <returns>The SharePointContext instance. Returns <c>null</c> if not found.</returns>
-        protected abstract SharePointContext LoadSharePointContext(HttpContextBase httpContext);
+        protected abstract Task<SharePointContext> LoadSharePointContext(HttpContextBase httpContext);
 
         /// <summary>
         /// Saves the specified SharePointContext instance associated with the specified HTTP context.
@@ -242,6 +243,6 @@ namespace SharePoint.Authentication.ACS
         /// </summary>
         /// <param name="spContext">The SharePointContext instance to be saved, or <c>null</c>.</param>
         /// <param name="httpContext">The HTTP context.</param>
-        protected abstract void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext);
+        protected abstract Task SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext);
     }
 }

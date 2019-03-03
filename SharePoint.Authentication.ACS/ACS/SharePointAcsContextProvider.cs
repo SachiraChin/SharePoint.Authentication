@@ -1,8 +1,8 @@
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
-using SharePoint.Authentication.ACS.TokenHelpers;
 using SharePoint.Authentication.ACS.Tokens;
 
 namespace SharePoint.Authentication.ACS
@@ -14,6 +14,12 @@ namespace SharePoint.Authentication.ACS
     {
         private const string SPContextKey = "SPContext";
         private const string SPCacheKeyKey = "SPCacheKey";
+        private readonly ISessionProvider<SharePointAcsContext> _sessionProvider;
+
+        public SharePointAcsContextProvider(ACSTokenHelper tokenHelper, ISessionProvider<SharePointAcsContext> sessionProvider) : base(tokenHelper)
+        {
+            _sessionProvider = sessionProvider;
+        }
 
         protected override SharePointContext CreateSharePointContext(Uri spHostUrl, Uri spAppWebUrl, string spLanguage, string spClientTag, string spProductNumber, HttpRequestBase httpRequest)
         {
@@ -61,13 +67,12 @@ namespace SharePoint.Authentication.ACS
             return false;
         }
 
-        protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
+        protected override async Task<SharePointContext> LoadSharePointContext(HttpContextBase httpContext)
         {
-            //return httpContext.Session?[SPContextKey] as SharePointAcsContext;
-            return null;
+            return await _sessionProvider?.Get(SPContextKey);
         }
 
-        protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
+        protected override async Task SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
         {
             SharePointAcsContext spAcsContext = spContext as SharePointAcsContext;
 
@@ -83,11 +88,7 @@ namespace SharePoint.Authentication.ACS
                 httpContext.Response.AppendCookie(spCacheKeyCookie);
             }
 
-            //httpContext.Session[SPContextKey] = spAcsContext;
-        }
-
-        public SharePointAcsContextProvider(LowTrustTokenHelper tokenHelper) : base(tokenHelper)
-        {
+            await _sessionProvider.Set(SPContextKey, spAcsContext);
         }
     }
 }

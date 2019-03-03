@@ -137,11 +137,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthenticationParameters\HighTrustAuthenticationParameters.cs" />
+    <Compile Include="ACS\ACSAuthenticationParameters.cs" />
+    <Compile Include="ACS\ACSTokenHelper.cs" />
+    <Compile Include="HighTrust\HighTrustAuthenticationParameters.cs" />
+    <Compile Include="HighTrust\HighTrustTokenHelper.cs" />
     <Compile Include="IAuthenticationParameters.cs" />
-    <Compile Include="TokenHelpers\HighTrustTokenHelper.cs" />
-    <Compile Include="AuthenticationParameters\LowTrustAuthenticationParameters.cs" />
-    <Compile Include="TokenHelpers\LowTrustTokenHelper.cs" />
+    <Compile Include="ISessionProvider.cs" />
     <Compile Include="Tokens\MultipleSymmetricKeySecurityToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\RedirectionStatus.cs" />
@@ -161,6 +162,5 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
