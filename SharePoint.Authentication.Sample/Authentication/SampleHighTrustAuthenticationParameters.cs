@@ -1,10 +1,9 @@
-﻿using Microsoft.IdentityModel.SecurityTokenService;
-using System.Configuration;
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Security.Cryptography.X509Certificates;
+using Microsoft.IdentityModel.SecurityTokenService;
 
 namespace SharePoint.Authentication.Sample.Authentication
 {
-    public class SampleAcsAuthenticationParameters : AcsAuthenticationParameters
+    public class SampleHighTrustAuthenticationParameters : HighTrustAuthenticationParameters
     {
         public override string ClientId { get; }
 
@@ -29,11 +28,5 @@ namespace SharePoint.Authentication.Sample.Authentication
         public override X509Certificate2 Certificate => null;
 
         public override X509SigningCredentials SigningCredentials => null;
-
-        public SampleAcsAuthenticationParameters()
-        {
-            ClientId = ConfigurationManager.AppSettings["sampleMvc:AcsClientId"];
-            ClientSecret = ConfigurationManager.AppSettings["sampleMvc:AcsClientSecret"];
-        }
     }
 }
