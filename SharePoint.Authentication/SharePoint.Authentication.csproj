@@ -143,6 +143,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\EmbeddedData.cs" />
     <Compile Include="LowTrust\LowTrustAcsAuthenticationParameters.cs" />
     <Compile Include="LowTrust\LowTrustTokenHelper.cs" />
     <Compile Include="Controllers\SharePointLoginController.cs" />
@@ -172,6 +173,9 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\UserLogin.Response.html" />
+    <EmbeddedResource Include="Templates\UserLogout.Response.html" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

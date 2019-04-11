@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SharePoint.Authentication.Exceptions;
+using SharePoint.Authentication.Helpers;
 
 namespace SharePoint.Authentication.Controllers
 {
@@ -22,7 +25,7 @@ namespace SharePoint.Authentication.Controllers
             _lowTrustTokenHelper = lowTrustTokenHelper;
         }
 
-        public virtual async Task<HttpResponseMessage> Login()
+        public virtual async Task<HttpResponseMessage> LowTrustLoginAsync()
         {
             var response = Request.CreateResponse(HttpStatusCode.Redirect);
             var queryString = this.Request.GetQueryNameValuePairs().ToList();
@@ -47,21 +50,49 @@ namespace SharePoint.Authentication.Controllers
             }
 
             var stateId = Guid.NewGuid().ToString("N");
-            var callbackUrl = await SaveStateAndReturnCallbackUrl(stateId);
+            var callbackUrl = await SaveStateAndReturnCallbackUrlAsync(stateId);
 
             var contextTokenUrl = _lowTrustTokenHelper.GetAppContextTokenRequestUrl(spHostUrl, callbackUrl);
             response.Headers.Location = new Uri(contextTokenUrl);
             return response;
         }
 
-        public virtual async Task<HttpResponseMessage> LoginCallback(string stateId)
+        public virtual async Task<HttpResponseMessage> LowTrustLoginCallbackAsync(string stateId)
         {
-            var response = Request.CreateResponse(HttpStatusCode.Redirect);
+            await CleanStateDataAsync(stateId);
             var contextToken = _lowTrustTokenHelper.GetContextTokenFromRequest(HttpContext.Current.Request);
+            var contextTokenObj = _lowTrustTokenHelper.ReadAndValidateContextToken(contextToken, HttpContext.Current.Request.Url.Authority);
+            
+            var sessionId = Guid.NewGuid().ToString("N");
 
+            await SaveContextTokenAsync(sessionId, contextTokenObj.ValidTo, contextToken);
+            
+            var callbackResponse = EmbeddedData.Get<string, TokenHelper>("SharePoint.Authentication.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", "/");
+            var sessionCookie = GetCookieHeader("session-id", sessionId, this.Request.RequestUri.Host, contextTokenObj.ValidTo, true, true);
+            var response = Request.CreateResponse(HttpStatusCode.OK);
+            response.Content = new StringContent(callbackResponse, Encoding.UTF8, "text/html");
+            response.Headers.AddCookies(new[] { sessionCookie, });
+            return response;
+        }
+        
+        private CookieHeaderValue GetCookieHeader(string cookieName, string cookieValue, string domain, DateTimeOffset expires, bool secure, bool httpOnly)
+        {
+            var cookie = new CookieHeaderValue(cookieName, cookieValue)
+            {
+                Expires = expires,
+                Domain = domain,
+                HttpOnly = httpOnly,
+                Secure = secure,
+                Path = "/",
+            };
 
+            return cookie;
         }
 
-        public abstract Task<string> SaveStateAndReturnCallbackUrl(string stateId);
+        public abstract Task<string> SaveStateAndReturnCallbackUrlAsync(string stateId);
+        
+        public abstract Task CleanStateDataAsync(string stateId);
+        
+        public abstract Task SaveContextTokenAsync(string sessionId, DateTimeOffset expireDate, string contextToken);
     }
 }
