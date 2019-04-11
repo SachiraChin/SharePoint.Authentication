@@ -8,15 +8,15 @@ using SharePoint.Authentication.Tokens;
 namespace SharePoint.Authentication
 {
     /// <summary>
-    /// Default provider for SharePointAcsContext.
+    /// Default provider for SharePointLowTrustContext.
     /// </summary>
-    public class SharePointAcsContextProvider : SharePointContextProvider
+    public class SharePointLowTrustContextProvider : SharePointContextProvider
     {
         private const string SPContextKey = "SPContext";
         private const string SPCacheKeyKey = "SPCacheKey";
-        private readonly ISessionProvider<SharePointAcsContext> _sessionProvider;
+        private readonly ISessionProvider<SharePointLowTrustContext> _sessionProvider;
 
-        public SharePointAcsContextProvider(AcsTokenHelper tokenHelper, ISessionProvider<SharePointAcsContext> sessionProvider) : base(tokenHelper)
+        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper, ISessionProvider<SharePointLowTrustContext> sessionProvider) : base(tokenHelper)
         {
             _sessionProvider = sessionProvider;
         }
@@ -43,25 +43,25 @@ namespace SharePoint.Authentication
                 return null;
             }
 
-            return new SharePointAcsContext(spHostUrl, spAppWebUrl, spLanguage, spClientTag, spProductNumber, contextTokenString, contextToken, _tokenHelper);
+            return new SharePointLowTrustContext(spHostUrl, spAppWebUrl, spLanguage, spClientTag, spProductNumber, contextTokenString, contextToken, _tokenHelper);
         }
 
         protected override bool ValidateSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
         {
-            SharePointAcsContext spAcsContext = spContext as SharePointAcsContext;
+            SharePointLowTrustContext spLowTrustContext = spContext as SharePointLowTrustContext;
 
-            if (spAcsContext != null)
+            if (spLowTrustContext != null)
             {
                 Uri spHostUrl = SharePointContext.GetSPHostUrl(httpContext.Request);
                 string contextToken = _tokenHelper.GetContextTokenFromRequest(httpContext.Request);
                 HttpCookie spCacheKeyCookie = httpContext.Request.Cookies[SPCacheKeyKey];
                 string spCacheKey = spCacheKeyCookie != null ? spCacheKeyCookie.Value : null;
 
-                return spHostUrl == spAcsContext.SPHostUrl &&
-                       !string.IsNullOrEmpty(spAcsContext.CacheKey) &&
-                       spCacheKey == spAcsContext.CacheKey &&
-                       !string.IsNullOrEmpty(spAcsContext.ContextToken) &&
-                       (string.IsNullOrEmpty(contextToken) || contextToken == spAcsContext.ContextToken);
+                return spHostUrl == spLowTrustContext.SPHostUrl &&
+                       !string.IsNullOrEmpty(spLowTrustContext.CacheKey) &&
+                       spCacheKey == spLowTrustContext.CacheKey &&
+                       !string.IsNullOrEmpty(spLowTrustContext.ContextToken) &&
+                       (string.IsNullOrEmpty(contextToken) || contextToken == spLowTrustContext.ContextToken);
             }
 
             return false;
@@ -76,13 +76,13 @@ namespace SharePoint.Authentication
 
         protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)
         {
-            SharePointAcsContext spAcsContext = spContext as SharePointAcsContext;
+            SharePointLowTrustContext spLowTrustContext = spContext as SharePointLowTrustContext;
 
-            if (spAcsContext != null)
+            if (spLowTrustContext != null)
             {
                 HttpCookie spCacheKeyCookie = new HttpCookie(SPCacheKeyKey)
                 {
-                    Value = spAcsContext.CacheKey,
+                    Value = spLowTrustContext.CacheKey,
                     Secure = true,
                     HttpOnly = true
                 };
@@ -92,7 +92,7 @@ namespace SharePoint.Authentication
             
             if (_sessionProvider == null) return;
 
-            await _sessionProvider.SetAsync(SPContextKey, spAcsContext);
+            await _sessionProvider.SetAsync(SPContextKey, spLowTrustContext);
         }
 
         protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
@@ -102,13 +102,13 @@ namespace SharePoint.Authentication
 
         protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
         {
-            SharePointAcsContext spAcsContext = spContext as SharePointAcsContext;
+            SharePointLowTrustContext spLowTrustContext = spContext as SharePointLowTrustContext;
 
-            if (spAcsContext != null)
+            if (spLowTrustContext != null)
             {
                 HttpCookie spCacheKeyCookie = new HttpCookie(SPCacheKeyKey)
                 {
-                    Value = spAcsContext.CacheKey,
+                    Value = spLowTrustContext.CacheKey,
                     Secure = true,
                     HttpOnly = true
                 };
@@ -116,7 +116,7 @@ namespace SharePoint.Authentication
                 httpContext.Response.AppendCookie(spCacheKeyCookie);
             }
 
-            _sessionProvider.Set(SPContextKey, spAcsContext);
+            _sessionProvider.Set(SPContextKey, spLowTrustContext);
         }
     }
 }

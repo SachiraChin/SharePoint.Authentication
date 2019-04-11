@@ -13,13 +13,13 @@ namespace SharePoint.Authentication.Controllers
 {
     public abstract class SharePointLoginController : ApiController
     {
-        private readonly SharePointAcsContextProvider _acsContextProvider;
-        private readonly AcsTokenHelper _acsTokenHelper;
+        private readonly SharePointLowTrustContextProvider _lowTrustContextProvider;
+        private readonly LowTrustTokenHelper _lowTrustTokenHelper;
 
-        protected SharePointLoginController(AcsTokenHelper acsTokenHelper, SharePointAcsContextProvider acsContextProvider)
+        protected SharePointLoginController(LowTrustTokenHelper lowTrustTokenHelper, SharePointLowTrustContextProvider lowTrustContextProvider)
         {
-            _acsContextProvider = acsContextProvider;
-            _acsTokenHelper = acsTokenHelper;
+            _lowTrustContextProvider = lowTrustContextProvider;
+            _lowTrustTokenHelper = lowTrustTokenHelper;
         }
 
         public virtual async Task<HttpResponseMessage> Login()
@@ -31,7 +31,7 @@ namespace SharePoint.Authentication.Controllers
             if (spHostUrl == null)
                 throw new SharePointHostUrlNotAvailableException();
 
-            var redirectionStatus = _acsContextProvider.CheckRedirectionStatus(HttpContext.Current, out var redirectUrl);
+            var redirectionStatus = _lowTrustContextProvider.CheckRedirectionStatus(HttpContext.Current, out var redirectUrl);
 
             switch (redirectionStatus)
             {
@@ -49,7 +49,7 @@ namespace SharePoint.Authentication.Controllers
             var stateId = Guid.NewGuid().ToString("N");
             var callbackUrl = await SaveStateAndReturnCallbackUrl(stateId);
 
-            var contextTokenUrl = _acsTokenHelper.GetAppContextTokenRequestUrl(spHostUrl, callbackUrl);
+            var contextTokenUrl = _lowTrustTokenHelper.GetAppContextTokenRequestUrl(spHostUrl, callbackUrl);
             response.Headers.Location = new Uri(contextTokenUrl);
             return response;
         }
@@ -57,7 +57,7 @@ namespace SharePoint.Authentication.Controllers
         public virtual async Task<HttpResponseMessage> LoginCallback(string stateId)
         {
             var response = Request.CreateResponse(HttpStatusCode.Redirect);
-            var contextToken = _acsTokenHelper.GetContextTokenFromRequest(HttpContext.Current.Request);
+            var contextToken = _lowTrustTokenHelper.GetContextTokenFromRequest(HttpContext.Current.Request);
 
 
         }

@@ -8,7 +8,7 @@ namespace SharePoint.Authentication
     /// <summary>
     /// Encapsulates all the information from SharePoint in ACS mode.
     /// </summary>
-    public class SharePointAcsContext : SharePointContext
+    public class SharePointLowTrustContext : SharePointContext
     {
         private readonly string contextToken;
         private readonly SharePointContextToken contextTokenObj;
@@ -83,7 +83,7 @@ namespace SharePoint.Authentication
             }
         }
 
-        public SharePointAcsContext(Uri spHostUrl, Uri spAppWebUrl, string spLanguage, string spClientTag, string spProductNumber, string contextToken, SharePointContextToken contextTokenObj, TokenHelper tokenHelper)
+        public SharePointLowTrustContext(Uri spHostUrl, Uri spAppWebUrl, string spLanguage, string spClientTag, string spProductNumber, string contextToken, SharePointContextToken contextTokenObj, TokenHelper tokenHelper)
             : base(spHostUrl, spAppWebUrl, spLanguage, spClientTag, spProductNumber, tokenHelper)
         {
             if (string.IsNullOrEmpty(contextToken))

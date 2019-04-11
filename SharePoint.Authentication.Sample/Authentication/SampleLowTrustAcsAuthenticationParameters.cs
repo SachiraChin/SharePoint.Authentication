@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace SharePoint.Authentication.Sample.Authentication
 {
-    public class SampleAcsAuthenticationParameters : AcsAuthenticationParameters
+    public class SampleLowTrustAcsAuthenticationParameters : LowTrustAcsAuthenticationParameters
     {
         public override string ClientId { get; }
 
@@ -30,7 +30,7 @@ namespace SharePoint.Authentication.Sample.Authentication
 
         public override X509SigningCredentials SigningCredentials => null;
 
-        public SampleAcsAuthenticationParameters()
+        public SampleLowTrustAcsAuthenticationParameters()
         {
             ClientId = ConfigurationManager.AppSettings["sampleMvc:AcsClientId"];
             ClientSecret = ConfigurationManager.AppSettings["sampleMvc:AcsClientSecret"];
