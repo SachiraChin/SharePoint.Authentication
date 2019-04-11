@@ -143,8 +143,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ACS\AcsAuthenticationParameters.cs" />
-    <Compile Include="ACS\AcsTokenHelper.cs" />
+    <Compile Include="LowTrust\AcsAuthenticationParameters.cs" />
+    <Compile Include="LowTrust\AcsTokenHelper.cs" />
     <Compile Include="Controllers\SharePointLoginController.cs" />
     <Compile Include="Exceptions\CanNotRedirectException.cs" />
     <Compile Include="Exceptions\SharePointAuthenticationException.cs" />
@@ -156,8 +156,8 @@
     <Compile Include="Tokens\MultipleSymmetricKeySecurityToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\RedirectionStatus.cs" />
-    <Compile Include="ACS\SharePointAcsContext.cs" />
-    <Compile Include="ACS\SharePointAcsContextProvider.cs" />
+    <Compile Include="LowTrust\SharePointAcsContext.cs" />
+    <Compile Include="LowTrust\SharePointAcsContextProvider.cs" />
     <Compile Include="SharePointContext.cs" />
     <Compile Include="SharePointContextProvider.cs" />
     <Compile Include="HighTrust\SharePointHighTrustContext.cs" />
