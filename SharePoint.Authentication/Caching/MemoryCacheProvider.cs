@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
 {
-    internal class MemoryCacheProvider<T> : BaseCacheExtension, IMemoryCacheProvider<T>
+    public class MemoryCacheProvider<T> : BaseCacheExtension, IMemoryCacheProvider<T>
     {
         public MemoryCacheProvider(string memoryGroup, int cacheExpireInMinutes, bool shouldThrowExceptionOnError) : base(memoryGroup)
         {

@@ -8,18 +8,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Dependencies;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
-using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using SharePoint.Authentication.Caching;
 using SharePoint.Authentication.Exceptions;
-using SharePoint.Authentication.Tokens;
 
-namespace SharePoint.Authentication.Middleware
+namespace SharePoint.Authentication.Owin
 {
     public class SharePointAuthenticationHandler : AuthenticationHandler<SharePointAuthenticationOptions>
     {

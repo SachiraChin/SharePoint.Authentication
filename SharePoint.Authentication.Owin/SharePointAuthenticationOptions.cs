@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin.Security;
 
-namespace SharePoint.Authentication.Middleware
+namespace SharePoint.Authentication.Owin
 {
     public class SharePointAuthenticationOptions : AuthenticationOptions
     {

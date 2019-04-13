@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
 {
-    internal class LockProvider<T> : BaseCacheExtension, ILockProvider<T>
+    public class LockProvider<T> : BaseCacheExtension, ILockProvider<T>
     {
         // ReSharper disable once StaticMemberInGenericType
         // This locked shared by all instances of this class. Staticness and concurrency is expected and handled

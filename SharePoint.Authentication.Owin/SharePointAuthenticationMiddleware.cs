@@ -1,7 +1,7 @@
 ﻿using Microsoft.Owin;
 using Microsoft.Owin.Security.Infrastructure;
 
-namespace SharePoint.Authentication.Middleware
+namespace SharePoint.Authentication.Owin
 {
     public class SharePointAuthenticationMiddleware : AuthenticationMiddleware<SharePointAuthenticationOptions>
     {
