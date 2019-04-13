@@ -40,7 +40,7 @@ namespace SharePoint.Authentication
                     return RedirectionStatus.Ok;
                 }
             }
-            catch (SecurityTokenExpiredException)
+            catch (Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException)
             {
                 contextTokenExpired = true;
             }

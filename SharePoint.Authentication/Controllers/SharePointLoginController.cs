@@ -18,10 +18,12 @@ namespace SharePoint.Authentication.Controllers
     {
         private readonly SharePointLowTrustContextProvider _lowTrustContextProvider;
         private readonly LowTrustTokenHelper _lowTrustTokenHelper;
+        private readonly ISharePointSessionProvider _sharePointSessionProvider;
 
-        protected SharePointLoginController(LowTrustTokenHelper lowTrustTokenHelper, SharePointLowTrustContextProvider lowTrustContextProvider)
+        protected SharePointLoginController(LowTrustTokenHelper lowTrustTokenHelper, SharePointLowTrustContextProvider lowTrustContextProvider, ISharePointSessionProvider sharePointSessionProvider)
         {
             _lowTrustContextProvider = lowTrustContextProvider;
+            _sharePointSessionProvider = sharePointSessionProvider;
             _lowTrustTokenHelper = lowTrustTokenHelper;
         }
 
@@ -49,24 +51,35 @@ namespace SharePoint.Authentication.Controllers
                     throw new ArgumentOutOfRangeException(nameof(redirectionStatus), redirectionStatus, $"{nameof(redirectionStatus)} value is out of range.");
             }
 
-            var stateId = Guid.NewGuid().ToString("N");
-            var callbackUrl = await SaveStateAndReturnCallbackUrlAsync(stateId);
+            var sessionId = Guid.NewGuid();
+            var spAppUrl = queryString.FirstOrDefault(k => string.Equals(k.Key, "SPAppWebUrl", StringComparison.CurrentCultureIgnoreCase)).Value;
+            var sharePointSession = new SharePointSession()
+            {
+                SessionId = sessionId,
+                SharePointHostWebUrl = spHostUrl,
+                SharePointAppWebUrl = spAppUrl,
+            };
+
+            await _sharePointSessionProvider.SaveSharePointSession(sessionId, sharePointSession);
+            var callbackUrl = await GetCallbackUrlAsync(sessionId.ToString("N"));
 
             var contextTokenUrl = _lowTrustTokenHelper.GetAppContextTokenRequestUrl(spHostUrl, callbackUrl);
             response.Headers.Location = new Uri(contextTokenUrl);
             return response;
         }
 
-        public virtual async Task<HttpResponseMessage> LowTrustLoginCallbackAsync(string stateId)
+        public virtual async Task<HttpResponseMessage> LowTrustLoginCallbackAsync(string sessionId)
         {
-            await CleanStateDataAsync(stateId);
+            var sharePointSession = await _sharePointSessionProvider.GetSharePointSession(Guid.Parse(sessionId));
+            var contextTokenAuthority = HttpContext.Current.Request.Url.Authority;
             var contextToken = _lowTrustTokenHelper.GetContextTokenFromRequest(HttpContext.Current.Request);
-            var contextTokenObj = _lowTrustTokenHelper.ReadAndValidateContextToken(contextToken, HttpContext.Current.Request.Url.Authority);
-            
-            var sessionId = Guid.NewGuid().ToString("N");
+            var contextTokenObj = _lowTrustTokenHelper.ReadAndValidateContextToken(contextToken, contextTokenAuthority);
 
-            await SaveContextTokenAsync(sessionId, contextTokenObj.ValidTo, contextToken);
-            
+            sharePointSession.ContextToken = contextToken;
+            sharePointSession.ContextTokenAuthority = contextTokenAuthority;
+
+            await _sharePointSessionProvider.UpdateSharePointSession(Guid.Parse(sessionId), sharePointSession);
+
             var callbackResponse = EmbeddedData.Get<string, TokenHelper>("SharePoint.Authentication.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", "/");
             var sessionCookie = GetCookieHeader("session-id", sessionId, this.Request.RequestUri.Host, contextTokenObj.ValidTo, true, true);
             var response = Request.CreateResponse(HttpStatusCode.OK);
@@ -89,10 +102,6 @@ namespace SharePoint.Authentication.Controllers
             return cookie;
         }
 
-        public abstract Task<string> SaveStateAndReturnCallbackUrlAsync(string stateId);
-        
-        public abstract Task CleanStateDataAsync(string stateId);
-        
-        public abstract Task SaveContextTokenAsync(string sessionId, DateTimeOffset expireDate, string contextToken);
+        public abstract Task<string> GetCallbackUrlAsync(string sessionId);
     }
 }
