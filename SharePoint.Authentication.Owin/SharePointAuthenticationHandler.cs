@@ -17,6 +17,7 @@ using Microsoft.Owin.Security.Infrastructure;
 using Newtonsoft.Json;
 using SharePoint.Authentication.Caching;
 using SharePoint.Authentication.Exceptions;
+using SharePoint.Authentication.Owin.Extensions;
 using SharePoint.Authentication.Owin.Models;
 
 namespace SharePoint.Authentication.Owin
@@ -36,30 +37,31 @@ namespace SharePoint.Authentication.Owin
 
             try
             {
+                var owin = HttpContext.Current.GetOwinContext();
+
+                if (owin.Request.Method == HttpMethod.Options.Method)
+                    return new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+
+                if (_sharePointAuthenticationOptions.AllowNonBrowserRequests == false
+                    && (!owin.Request.Headers.ContainsKey("User-Agent") || owin.Request.Headers["User-Agent"].ToLower().StartsWith("curl"))
+                    && !owin.Request.Headers.ContainsKey("Origin")
+                    && !owin.Request.Headers.ContainsKey("Referer"))
+                {
+                    throw new SharePointAuthenticationException($"Request wasn't sent from a browser. " +
+                                                                $"User-Agent: {(owin.Request.Headers.ContainsKey("User-Agent") ? owin.Request.Headers["User-Agent"] : null)}, " +
+                                                                $"Origin: {(owin.Request.Headers.ContainsKey("Origin") ? owin.Request.Headers["Origin"] : null)}, " +
+                                                                $"Referer: {(owin.Request.Headers.ContainsKey("Referer") ? owin.Request.Headers["Referer"] : null)}, ");
+                }
+
                 using (var dependencyScope = _sharePointAuthenticationOptions.DependencyResolver.BeginScope())
                 {
-                    var owin = HttpContext.Current.GetOwinContext();
-
-                    if (owin.Request.Method == HttpMethod.Options.Method)
-                        return new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
-
-                    if (_sharePointAuthenticationOptions.AllowNonBrowserRequests == false && (!owin.Request.Headers.ContainsKey("User-Agent") ||
-                         owin.Request.Headers["User-Agent"].ToLower().StartsWith("curl") != false) &&
-                        !owin.Request.Headers.ContainsKey("Origin") && !owin.Request.Headers.ContainsKey("Referer"))
-                    {
-                        throw new SharePointAuthenticationException($"Request wasn't sent from a browser. " +
-                                                 $"User-Agent: {(owin.Request.Headers.ContainsKey("User-Agent") ? owin.Request.Headers["User-Agent"] : null)}, " +
-                                                 $"Origin: {(owin.Request.Headers.ContainsKey("Origin") ? owin.Request.Headers["Origin"] : null)}, " +
-                                                 $"Referer: {(owin.Request.Headers.ContainsKey("Referer") ? owin.Request.Headers["Referer"] : null)}, ");
-                    }
-
                     var token = await GetAccessToken(dependencyScope, owin);
 
                     if (token == null)
                     {
                         throw new SharePointAuthenticationException("Context token is null");
                     }
-                    
+
                     var tokenValidationParameters = new TokenValidationParameters
                     {
                         //// The signing key must match!
@@ -81,7 +83,7 @@ namespace SharePoint.Authentication.Owin
                         ClockSkew = TimeSpan.Zero,
 
                         RequireSignedTokens = false,
-                
+
                         IssuerSigningKeys = GetPublicKeysCached(dependencyScope)
                     };
 
@@ -105,16 +107,14 @@ namespace SharePoint.Authentication.Owin
                 return null;
             }
         }
-        
+
         public static List<SecurityKey> GetPublicKeysCached(IDependencyScope dependencyScope)
         {
-            const string memoryGroup = "AADAccess";
+            const string memoryGroup = "SharePoint.Authentication.AADAccess";
             const string key = "PublicKeys";
-            
-            var cacheProvider = (ICacheProvider<List<SecurityKey>>)dependencyScope.GetService(typeof(ICacheProvider<List<SecurityKey>>)) ??
-                                new MemoryCacheProvider<List<SecurityKey>>(memoryGroup, 12 * 60, true);
-            var lockProvider = (ILockProvider<List<SecurityKey>> )dependencyScope.GetService(typeof(ILockProvider<List<SecurityKey>>)) ??
-                               new LockProvider<List<SecurityKey>>(memoryGroup);
+
+            var cacheProvider = dependencyScope.Resolve<ICacheProvider<List<SecurityKey>>>() ?? new MemoryCacheProvider<List<SecurityKey>>(memoryGroup, 12 * 60, true);
+            var lockProvider = dependencyScope.Resolve<ILockProvider<List<SecurityKey>>>() ?? new LockProvider<List<SecurityKey>>(memoryGroup);
 
             return lockProvider.PerformActionLocked(key, () => cacheProvider.Get(key, GetPublicKeys));
         }
@@ -123,7 +123,6 @@ namespace SharePoint.Authentication.Owin
         {
             using (var client = new WebClient())
             {
-
                 var openIdConfigStr = client.DownloadString("https://login.microsoftonline.com/common/.well-known/openid-configuration");
                 var openIdConfig = JsonConvert.DeserializeObject<AADOpenIdConfig>(openIdConfigStr);
                 var jwkeys = client.DownloadString(openIdConfig.jwks_uri);
@@ -151,13 +150,11 @@ namespace SharePoint.Authentication.Owin
         private async Task<string> GetAccessToken(IDependencyScope dependencyScope, IOwinContext owin)
         {
             const string memoryGroup = "SharePoint.Authentication.SharePointSession";
-            var cacheProvider = (ICacheProvider<string>)dependencyScope.GetService(typeof(ICacheProvider<string>)) ??
-                                new MemoryCacheProvider<string>(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
-            var lockProvider = (ILockProvider<string> )dependencyScope.GetService(typeof(ILockProvider<string>)) ??
-                               new LockProvider<string>(memoryGroup);
-            var lowTrustTokenHelper = (LowTrustTokenHelper)dependencyScope.GetService(typeof(LowTrustTokenHelper));
-            var contextTokenProvider = (ISharePointSessionProvider)dependencyScope.GetService(typeof(ISharePointSessionProvider));
-            
+            var cacheProvider = dependencyScope.Resolve<ICacheProvider<string>>() ?? new MemoryCacheProvider<string>(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
+            var lockProvider = dependencyScope.Resolve<ILockProvider<string>>() ?? new LockProvider<string>(memoryGroup);
+            var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
+            var contextTokenProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
+
             async Task<string> GetNewAccessToken(Guid sessionId)
             {
                 try
@@ -186,7 +183,7 @@ namespace SharePoint.Authentication.Owin
                 }
 
                 var cacheKey = sessionId.ToString("N");
-                var accessToken = await lockProvider.PerformActionLockedAsync(cacheKey, 
+                var accessToken = await lockProvider.PerformActionLockedAsync(cacheKey,
                     () => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId)));
 
                 if (string.IsNullOrWhiteSpace(accessToken)) continue;

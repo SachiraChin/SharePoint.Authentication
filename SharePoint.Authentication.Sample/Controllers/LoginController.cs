@@ -23,7 +23,7 @@ namespace SharePoint.Authentication.Sample.Controllers
             return base.LowTrustLoginAsync();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("callback/{sessionId}")]
         public override Task<HttpResponseMessage> LowTrustLoginCallbackAsync(string sessionId)
         {

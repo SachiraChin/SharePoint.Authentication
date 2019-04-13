@@ -20,7 +20,7 @@ namespace SharePoint.Authentication.Sample.Authentication
                 var model = new SampleSharePointSession()
                 {
                     SessionId = sessionId,
-                    ContextToken = StringCipher.Encrypt(sharePointSession.ContextToken, VerySecurePassword),
+                    ContextToken = string.IsNullOrWhiteSpace(sharePointSession.ContextToken) ? null : StringCipher.Encrypt(sharePointSession.ContextToken, VerySecurePassword),
                     ContextTokenAuthority = sharePointSession.ContextTokenAuthority,
                     SharePointAppWebUrl = sharePointSession.SharePointAppWebUrl,
                     SharePointHostWebUrl = sharePointSession.SharePointHostWebUrl,
@@ -37,7 +37,7 @@ namespace SharePoint.Authentication.Sample.Authentication
                 var model = new SampleSharePointSession()
                 {
                     SessionId = sessionId,
-                    ContextToken = StringCipher.Encrypt(sharePointSession.ContextToken, VerySecurePassword),
+                    ContextToken = string.IsNullOrWhiteSpace(sharePointSession.ContextToken) ? null : StringCipher.Encrypt(sharePointSession.ContextToken, VerySecurePassword),
                     ContextTokenAuthority = sharePointSession.ContextTokenAuthority,
                     SharePointAppWebUrl = sharePointSession.SharePointAppWebUrl,
                     SharePointHostWebUrl = sharePointSession.SharePointHostWebUrl,
@@ -56,7 +56,7 @@ namespace SharePoint.Authentication.Sample.Authentication
                 var model = new SharePointSession()
                 {
                     SessionId = sessionId,
-                    ContextToken = StringCipher.Decrypt(dbModel.ContextToken, VerySecurePassword),
+                    ContextToken = dbModel.ContextToken == null ? null : StringCipher.Decrypt(dbModel.ContextToken, VerySecurePassword),
                     ContextTokenAuthority = dbModel.ContextTokenAuthority,
                     SharePointAppWebUrl = dbModel.SharePointAppWebUrl,
                     SharePointHostWebUrl = dbModel.SharePointHostWebUrl,

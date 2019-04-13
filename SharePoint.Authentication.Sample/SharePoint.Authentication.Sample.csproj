@@ -18,7 +18,7 @@
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
-    <IISExpressSSLPort>44366</IISExpressSSLPort>
+    <IISExpressSSLPort>44379</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -34,6 +34,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -212,6 +213,10 @@
     <Compile Include="DataContext\SampleDataContext.cs" />
     <Compile Include="DataContext\SampleSharePointSession.cs" />
     <Compile Include="DataContext\StringCipher.cs" />
+    <Compile Include="Migrations\201904131320419_Initial.cs" />
+    <Compile Include="Migrations\201904131320419_Initial.Designer.cs">
+      <DependentUpon>201904131320419_Initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -309,6 +314,11 @@
       <Name>SharePoint.Authentication</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201904131320419_Initial.resx">
+      <DependentUpon>201904131320419_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -327,7 +337,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50800</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://pmboxdev.com:44388/</IISUrl>
+          <IISUrl>https://spauthtest.com:44388/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

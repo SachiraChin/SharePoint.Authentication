@@ -122,7 +122,7 @@ namespace SharePoint.Authentication
                 httpContext.Response.AppendCookie(spCacheKeyCookie);
             }
 
-            _sessionProvider.Set(SPContextKey, spLowTrustContext);
+            _sessionProvider?.Set(SPContextKey, spLowTrustContext);
         }
     }
 }
