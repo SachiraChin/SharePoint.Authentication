@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
 {
-    public class MemoryCacheProvider<T> : BaseCacheExtension, IMemoryCacheProvider<T>
+    public class MemoryCacheProvider<T> : BaseCacheExtension, ICacheProvider<T>
     {
         public MemoryCacheProvider(string memoryGroup, int cacheExpireInMinutes, bool shouldThrowExceptionOnError) : base(memoryGroup)
         {
@@ -155,6 +155,11 @@ namespace SharePoint.Authentication.Caching
 
                 // ignored   
             }
+        }
+
+        public Task SetAsync(string key, T value)
+        {
+            throw new NotImplementedException();
         }
 
         internal class NullClass

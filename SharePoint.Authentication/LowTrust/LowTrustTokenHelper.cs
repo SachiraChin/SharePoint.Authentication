@@ -2,7 +2,7 @@
 {
     public class LowTrustTokenHelper : TokenHelper
     {
-        public LowTrustTokenHelper(LowTrustAcsAuthenticationParameters authenticationParameters) : base(authenticationParameters)
+        public LowTrustTokenHelper(LowTrustAuthenticationParameters authenticationParameters) : base(authenticationParameters)
         {
         }
     }

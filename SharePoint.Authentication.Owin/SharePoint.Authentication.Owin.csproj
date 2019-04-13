@@ -92,6 +92,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\AADOpenIdConfig.cs" />
+    <Compile Include="Models\AADPublicKey.cs" />
+    <Compile Include="Models\AADPublicKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharePointAuthenticationHandler.cs" />
     <Compile Include="SharePointAuthenticationMiddleware.cs" />

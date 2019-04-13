@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.SecurityTokenService;
 
 namespace SharePoint.Authentication
 {
-    public abstract class LowTrustAcsAuthenticationParameters : IAuthenticationParameters
+    public abstract class LowTrustAuthenticationParameters : IAuthenticationParameters
     {
         public abstract string ClientId { get; }
         public abstract string IssuerId { get; }

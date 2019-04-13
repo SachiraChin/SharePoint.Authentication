@@ -2,6 +2,7 @@ using System;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
+using SharePoint.Authentication.Caching;
 
 namespace SharePoint.Authentication
 {
@@ -11,9 +12,14 @@ namespace SharePoint.Authentication
     public class SharePointHighTrustContextProvider : SharePointContextProvider
     {
         private const string SPContextKey = "SPContext";
-        private readonly ISessionProvider<SharePointHighTrustContext> _sessionProvider;
+        private readonly ICacheProvider<SharePointHighTrustContext> _sessionProvider;
 
-        public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper, ISessionProvider<SharePointHighTrustContext> sessionProvider) : base(tokenHelper)
+        public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper) : base(tokenHelper)
+        {
+            _sessionProvider = null;
+        }
+
+        public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper, ICacheProvider<SharePointHighTrustContext> sessionProvider) : base(tokenHelper)
         {
             _sessionProvider = sessionProvider;
         }
@@ -52,7 +58,7 @@ namespace SharePoint.Authentication
         {
             if (_sessionProvider == null) return null;
 
-            return await _sessionProvider.GetAsync(SPContextKey);
+            return await _sessionProvider.GetAsync(SPContextKey, null);
         }
 
         protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)

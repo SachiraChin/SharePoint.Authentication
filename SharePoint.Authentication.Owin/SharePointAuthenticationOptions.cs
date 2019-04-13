@@ -6,7 +6,6 @@ namespace SharePoint.Authentication.Owin
 {
     public class SharePointAuthenticationOptions : AuthenticationOptions
     {
-        public TokenValidationParameters JwtValidationParameters { get; set; }
         public bool AllowNonBrowserRequests { get; set; }
         public int TokenCacheDurationInMinutes { get; set; } = 10;
         public IDependencyResolver DependencyResolver { get; set; }

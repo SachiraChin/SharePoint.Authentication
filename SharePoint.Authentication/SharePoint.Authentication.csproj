@@ -135,12 +135,12 @@
   <ItemGroup>
     <Compile Include="Caching\BaseCacheExtension.cs" />
     <Compile Include="Caching\ILockProvider.cs" />
-    <Compile Include="Caching\IMemoryCacheProvider.cs" />
+    <Compile Include="Caching\ICacheProvider.cs" />
     <Compile Include="Caching\LockProvider.cs" />
     <Compile Include="Caching\MemoryCacheProvider.cs" />
     <Compile Include="Helpers\EmbeddedData.cs" />
     <Compile Include="ISharePointSessionProvider.cs" />
-    <Compile Include="LowTrust\LowTrustAcsAuthenticationParameters.cs" />
+    <Compile Include="LowTrust\LowTrustAuthenticationParameters.cs" />
     <Compile Include="LowTrust\LowTrustTokenHelper.cs" />
     <Compile Include="Controllers\SharePointLoginController.cs" />
     <Compile Include="Exceptions\CanNotRedirectException.cs" />
@@ -149,7 +149,6 @@
     <Compile Include="HighTrust\HighTrustAuthenticationParameters.cs" />
     <Compile Include="HighTrust\HighTrustTokenHelper.cs" />
     <Compile Include="IAuthenticationParameters.cs" />
-    <Compile Include="ISessionProvider.cs" />
     <Compile Include="Models\SharePointSession.cs" />
     <Compile Include="Tokens\MultipleSymmetricKeySecurityToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

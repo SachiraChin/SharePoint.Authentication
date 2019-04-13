@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.IdentityModel.Tokens;
+using SharePoint.Authentication.Caching;
 using SharePoint.Authentication.Tokens;
 
 namespace SharePoint.Authentication
@@ -14,9 +15,14 @@ namespace SharePoint.Authentication
     {
         private const string SPContextKey = "SPContext";
         private const string SPCacheKeyKey = "SPCacheKey";
-        private readonly ISessionProvider<SharePointLowTrustContext> _sessionProvider;
+        private readonly ICacheProvider<SharePointLowTrustContext> _sessionProvider;
 
-        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper, ISessionProvider<SharePointLowTrustContext> sessionProvider) : base(tokenHelper)
+        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper) : base(tokenHelper)
+        {
+            _sessionProvider = null;
+        }
+
+        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper, ICacheProvider<SharePointLowTrustContext> sessionProvider) : base(tokenHelper)
         {
             _sessionProvider = sessionProvider;
         }
@@ -71,7 +77,7 @@ namespace SharePoint.Authentication
         {
             if (_sessionProvider == null) return null;
             
-            return await _sessionProvider.GetAsync(SPContextKey);
+            return await _sessionProvider.GetAsync(SPContextKey, null);
         }
 
         protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)

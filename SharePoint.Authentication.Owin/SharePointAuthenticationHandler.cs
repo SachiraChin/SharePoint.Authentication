@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Dependencies;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using Newtonsoft.Json;
 using SharePoint.Authentication.Caching;
 using SharePoint.Authentication.Exceptions;
+using SharePoint.Authentication.Owin.Models;
 
 namespace SharePoint.Authentication.Owin
 {
@@ -55,8 +59,33 @@ namespace SharePoint.Authentication.Owin
                     {
                         throw new SharePointAuthenticationException("Context token is null");
                     }
+                    
+                    var tokenValidationParameters = new TokenValidationParameters
+                    {
+                        //// The signing key must match!
+                        ValidateIssuerSigningKey = false,
+                        //IssuerSigningKey = new InMemorySymmetricSecurityKey(secret),
 
-                    var principal = handler.ValidateToken(token, _sharePointAuthenticationOptions.JwtValidationParameters, out var validToken);
+                        //// Validate the JWT Issuer (iss) claim
+                        ValidateIssuer = false,
+                        //ValidIssuer = issuer,
+
+                        //// Validate the JWT Audience (aud) claim
+                        ValidateAudience = false,
+                        //ValidAudience = audience,
+
+                        // Validate the token expiry
+                        ValidateLifetime = true,
+
+                        // If you want to allow a certain amount of clock drift, set that here:
+                        ClockSkew = TimeSpan.Zero,
+
+                        RequireSignedTokens = false,
+                
+                        IssuerSigningKeys = GetPublicKeysCached(dependencyScope)
+                    };
+
+                    var principal = handler.ValidateToken(token, tokenValidationParameters, out var validToken);
 
                     if (!(validToken is JwtSecurityToken))
                     {
@@ -76,11 +105,53 @@ namespace SharePoint.Authentication.Owin
                 return null;
             }
         }
+        
+        public static List<SecurityKey> GetPublicKeysCached(IDependencyScope dependencyScope)
+        {
+            const string memoryGroup = "AADAccess";
+            const string key = "PublicKeys";
+            
+            var cacheProvider = (ICacheProvider<List<SecurityKey>>)dependencyScope.GetService(typeof(ICacheProvider<List<SecurityKey>>)) ??
+                                new MemoryCacheProvider<List<SecurityKey>>(memoryGroup, 12 * 60, true);
+            var lockProvider = (ILockProvider<List<SecurityKey>> )dependencyScope.GetService(typeof(ILockProvider<List<SecurityKey>>)) ??
+                               new LockProvider<List<SecurityKey>>(memoryGroup);
+
+            return lockProvider.PerformActionLocked(key, () => cacheProvider.Get(key, GetPublicKeys));
+        }
+
+        public static List<SecurityKey> GetPublicKeys()
+        {
+            using (var client = new WebClient())
+            {
+
+                var openIdConfigStr = client.DownloadString("https://login.microsoftonline.com/common/.well-known/openid-configuration");
+                var openIdConfig = JsonConvert.DeserializeObject<AADOpenIdConfig>(openIdConfigStr);
+                var jwkeys = client.DownloadString(openIdConfig.jwks_uri);
+                var response = JsonConvert.DeserializeObject<AADPublicKeys>(jwkeys);
+
+                var keys = new List<SecurityKey>();
+                foreach (var webKey in response.keys)
+                {
+                    var e = Decode(webKey.e);
+                    var n = Decode(webKey.n);
+
+                    var key = new RsaSecurityKey(new RSAParameters { Exponent = e, Modulus = n })
+                    {
+                        KeyId = webKey.kid
+                    };
+
+                    keys.Add(key);
+                }
+
+                return keys;
+            }
+
+        }
 
         private async Task<string> GetAccessToken(IDependencyScope dependencyScope, IOwinContext owin)
         {
             const string memoryGroup = "SharePoint.Authentication.SharePointSession";
-            var cacheProvider = (IMemoryCacheProvider<string>)dependencyScope.GetService(typeof(IMemoryCacheProvider<string>)) ??
+            var cacheProvider = (ICacheProvider<string>)dependencyScope.GetService(typeof(ICacheProvider<string>)) ??
                                 new MemoryCacheProvider<string>(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
             var lockProvider = (ILockProvider<string> )dependencyScope.GetService(typeof(ILockProvider<string>)) ??
                                new LockProvider<string>(memoryGroup);
@@ -150,6 +221,22 @@ namespace SharePoint.Authentication.Owin
 
                 yield return val;
             }
+        }
+
+        public static byte[] Decode(string arg)
+        {
+            if (arg == null)
+            {
+                throw new ArgumentNullException("arg");
+            }
+
+            var s = arg
+                .PadRight(arg.Length + (4 - arg.Length % 4) % 4, '=')
+                .Replace("_", "/")
+                .Replace("-", "+");
+
+
+            return Convert.FromBase64String(s);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
 {
-    public interface IMemoryCacheProvider<T>
+    public interface ICacheProvider<T>
     {
         string MemoryGroup { get; }
         int CacheExpireInMinutes { get; }
@@ -17,5 +17,6 @@ namespace SharePoint.Authentication.Caching
         void Set(string key, T value);
 
         void Remove(string key);
+        Task SetAsync(string key, T value);
     }
 }
