@@ -14,7 +14,7 @@ namespace SharePoint.Authentication.Sample
             // Web API configuration and services
             
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter() { CamelCaseText = true });
+            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter() { NamingStrategy = new CamelCaseNamingStrategy() });
             config.Formatters.JsonFormatter.UseDataContractJsonSerializer = false;
 
 #if DEBUG
