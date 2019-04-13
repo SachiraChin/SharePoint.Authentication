@@ -177,9 +177,6 @@
     <Compile Include="HighTrust\HighTrustTokenHelper.cs" />
     <Compile Include="IAuthenticationParameters.cs" />
     <Compile Include="ISessionProvider.cs" />
-    <Compile Include="Middleware\SharePointAuthenticationHandler.cs" />
-    <Compile Include="Middleware\SharePointAuthenticationMiddleware.cs" />
-    <Compile Include="Middleware\SharePointAuthenticationOptions.cs" />
     <Compile Include="Models\SharePointSession.cs" />
     <Compile Include="Tokens\MultipleSymmetricKeySecurityToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
