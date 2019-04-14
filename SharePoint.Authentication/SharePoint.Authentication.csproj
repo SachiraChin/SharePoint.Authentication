@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
-	<NullableContextOptions>enable</NullableContextOptions>
+    <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8.0</LangVersion>
-	<NullableContextOptions>enable</NullableContextOptions>
+    <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -43,7 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <LangVersion>8.0</LangVersion>
-	<NullableContextOptions>enable</NullableContextOptions>
+    <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -141,18 +141,12 @@
     <Compile Include="Caching\ICacheProvider.cs" />
     <Compile Include="Caching\LockProvider.cs" />
     <Compile Include="Caching\MemoryCacheProvider.cs" />
-    <Compile Include="Helpers\EmbeddedData.cs" />
-    <Compile Include="ISharePointSessionProvider.cs" />
     <Compile Include="LowTrust\LowTrustAuthenticationParameters.cs" />
     <Compile Include="LowTrust\LowTrustTokenHelper.cs" />
-    <Compile Include="Controllers\SharePointLoginController.cs" />
-    <Compile Include="Exceptions\CanNotRedirectException.cs" />
     <Compile Include="Exceptions\SharePointAuthenticationException.cs" />
-    <Compile Include="Exceptions\SharePointHostUrlNotAvailableException.cs" />
     <Compile Include="HighTrust\HighTrustAuthenticationParameters.cs" />
     <Compile Include="HighTrust\HighTrustTokenHelper.cs" />
     <Compile Include="IAuthenticationParameters.cs" />
-    <Compile Include="Models\SharePointSession.cs" />
     <Compile Include="Tokens\MultipleSymmetricKeySecurityToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\RedirectionStatus.cs" />
@@ -171,10 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Templates\UserLogin.Response.html" />
-    <EmbeddedResource Include="Templates\UserLogout.Response.html" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

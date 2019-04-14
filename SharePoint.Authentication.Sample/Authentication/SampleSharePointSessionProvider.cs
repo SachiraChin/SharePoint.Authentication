@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using SharePoint.Authentication.Owin;
+using SharePoint.Authentication.Owin.Models;
 using SharePoint.Authentication.Sample.DataContext;
 
 namespace SharePoint.Authentication.Sample.Authentication

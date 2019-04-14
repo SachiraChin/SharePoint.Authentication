@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using SharePoint.Authentication.Owin.Models;
 
-namespace SharePoint.Authentication
+namespace SharePoint.Authentication.Owin
 {
     public interface ISharePointSessionProvider
     {

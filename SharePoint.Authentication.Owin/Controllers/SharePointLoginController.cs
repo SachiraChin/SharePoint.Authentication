@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -9,10 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using SharePoint.Authentication.Exceptions;
-using SharePoint.Authentication.Helpers;
+using SharePoint.Authentication.Owin.Exceptions;
+using SharePoint.Authentication.Owin.Helpers;
+using SharePoint.Authentication.Owin.Models;
 
-namespace SharePoint.Authentication.Controllers
+namespace SharePoint.Authentication.Owin.Controllers
 {
     public abstract class SharePointLoginController : ApiController
     {

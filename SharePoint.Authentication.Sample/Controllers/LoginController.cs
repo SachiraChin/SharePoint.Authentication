@@ -5,7 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using SharePoint.Authentication.Controllers;
+using SharePoint.Authentication.Owin;
+using SharePoint.Authentication.Owin.Controllers;
 
 namespace SharePoint.Authentication.Sample.Controllers
 {

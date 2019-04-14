@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-
-namespace SharePoint.Authentication
+namespace SharePoint.Authentication.Owin.Models
 {
     public class SharePointSession
     {
