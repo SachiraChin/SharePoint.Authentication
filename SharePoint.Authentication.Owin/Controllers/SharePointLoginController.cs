@@ -67,7 +67,7 @@ namespace SharePoint.Authentication.Owin.Controllers
 
                 await _sharePointSessionProvider.SaveSharePointSession(sessionId, sharePointSession);
 
-                var callbackResponse = EmbeddedData.Get<string, TokenHelper>("SharePoint.Authentication.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", LowTrustLandingPageUrl);
+                var callbackResponse = EmbeddedData.Get<string, ISharePointSessionProvider>("SharePoint.Authentication.Owin.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", LowTrustLandingPageUrl);
                 var sessionCookie = GetCookieHeader("session-id", sessionId.ToString("N"), Request.RequestUri.Host, contextTokenObj.ValidTo, true, true);
                 var response = Request.CreateResponse(HttpStatusCode.OK);
                 response.Content = new StringContent(callbackResponse, Encoding.UTF8, "text/html");
@@ -112,7 +112,7 @@ namespace SharePoint.Authentication.Owin.Controllers
                 context.Load(context.Web);
                 await context.ExecuteQueryAsync();
 
-                var callbackResponse = EmbeddedData.Get<string, TokenHelper>("SharePoint.Authentication.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", HighTrustLandingPageUrl);
+                var callbackResponse = EmbeddedData.Get<string, ISharePointSessionProvider>("SharePoint.Authentication.Owin.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", HighTrustLandingPageUrl);
                 var response = Request.CreateResponse(HttpStatusCode.OK);
                 response.Content = new StringContent(callbackResponse, Encoding.UTF8, "text/html");
                 return response;

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
 {
-    public class MemoryCacheProvider<T> : BaseCacheExtension, ICacheProvider<T>
+    public class MemoryCacheProvider : BaseCacheExtension, ICacheProvider
     {
         public MemoryCacheProvider(string memoryGroup, int cacheExpireInMinutes, bool shouldThrowExceptionOnError) : base(memoryGroup)
         {
@@ -15,7 +15,7 @@ namespace SharePoint.Authentication.Caching
         public int CacheExpireInMinutes { get; }
         public bool ShouldThrowExceptionOnError { get; }
 
-        public virtual async Task<T> GetAsync(string key, Func<Task<T>> getNewInstance, bool force = false)
+        public virtual async Task<T> GetAsync<T>(string key, Func<Task<T>> getNewInstance, bool force = false)
         {
             try
             {
@@ -23,7 +23,7 @@ namespace SharePoint.Authentication.Caching
                 if (force)
                 {
                     newValue = await getNewInstance();
-                    Set(key, newValue);
+                    await SetAsync(key, newValue);
                     return newValue;
                 }
 
@@ -42,7 +42,7 @@ namespace SharePoint.Authentication.Caching
                 if (getNewInstance == null) return default;
 
                 newValue = await getNewInstance();
-                Set(key, newValue);
+                await SetAsync(key, newValue);
                 return newValue;
             }
             catch (Exception)
@@ -54,7 +54,7 @@ namespace SharePoint.Authentication.Caching
             }
         }
 
-        public virtual T Get(string key, Func<T> getNewInstance, bool force = false)
+        public T Get<T>(string key, Func<T> getNewInstance, bool force = false)
         {
             try
             {
@@ -93,54 +93,6 @@ namespace SharePoint.Authentication.Caching
             }
         }
 
-        public virtual T Get(string key)
-        {
-            try
-            {
-                var cachedData = MemoryCache.Default.Get(GetKey(key));
-                switch (cachedData)
-                {
-                    case T returnData:
-                        return returnData;
-                    default:
-                        return default;
-                }
-            }
-            catch (Exception)
-            {
-                if (ShouldThrowExceptionOnError)
-                    throw;
-
-                return default;
-            }
-        }
-
-        public virtual void Set(string key, T value)
-        {
-            try
-            {
-                object setValue;
-                if (value == null)
-                    setValue = new NullClass();
-                else
-                    setValue = value;
-
-                var cip = new CacheItemPolicy()
-                {
-                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(CacheExpireInMinutes),
-                };
-                MemoryCache.Default.Set(GetKey(key), setValue, cip);
-
-            }
-            catch (Exception)
-            {
-                if (ShouldThrowExceptionOnError)
-                    throw;
-
-                // ignored
-            }
-        }
-
         public virtual void Remove(string key)
         {
             try
@@ -157,9 +109,57 @@ namespace SharePoint.Authentication.Caching
             }
         }
 
-        public Task SetAsync(string key, T value)
+        public Task SetAsync<T>(string key, T value)
         {
-            throw new NotImplementedException();
+            try
+            {
+                object setValue;
+                if (value == null)
+                    setValue = new NullClass();
+                else
+                    setValue = value;
+
+                var cip = new CacheItemPolicy()
+                {
+                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(CacheExpireInMinutes),
+                };
+                MemoryCache.Default.Set(GetKey(key), setValue, cip);
+
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                if (ShouldThrowExceptionOnError)
+                    throw;
+
+                // ignored
+                return Task.FromResult(true);
+            }
+        }
+
+        public void Set<T>(string key, T value)
+        {
+            try
+            {
+                object setValue;
+                if (value == null)
+                    setValue = new NullClass();
+                else
+                    setValue = value;
+
+                var cip = new CacheItemPolicy()
+                {
+                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(CacheExpireInMinutes),
+                };
+                MemoryCache.Default.Set(GetKey(key), setValue, cip);
+            }
+            catch (Exception)
+            {
+                if (ShouldThrowExceptionOnError)
+                    throw;
+
+                // ignored
+            }
         }
 
         internal class NullClass

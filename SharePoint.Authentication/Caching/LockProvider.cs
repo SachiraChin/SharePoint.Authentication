@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
 {
-    public class LockProvider<T> : BaseCacheExtension, ILockProvider<T>
+    public class LockProvider : BaseCacheExtension, ILockProvider
     {
         // ReSharper disable once StaticMemberInGenericType
         // This locked shared by all instances of this class. Staticness and concurrency is expected and handled
@@ -17,7 +17,7 @@ namespace SharePoint.Authentication.Caching
 
         public ConcurrentDictionary<string, SemaphoreSlim> KeyLocks => StaticKeyLocks;
 
-        public async Task<T> PerformActionLockedAsync(string key, Func<Task<T>> action)
+        public async Task<T> PerformActionLockedAsync<T>(string key, Func<Task<T>> action)
         {
             var keyLock = KeyLocks.GetOrAdd(GetKey(key), x => new SemaphoreSlim(1, 1));
             await keyLock.WaitAsync();
@@ -31,7 +31,7 @@ namespace SharePoint.Authentication.Caching
             }
         }
 
-        public T PerformActionLocked(string key, Func<T> action)
+        public T PerformActionLocked<T>(string key, Func<T> action)
         {
             var keyLock = KeyLocks.GetOrAdd(GetKey(key), x => new SemaphoreSlim(1, 1));
             keyLock.Wait();

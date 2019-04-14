@@ -15,14 +15,14 @@ namespace SharePoint.Authentication
     {
         private const string SPContextKey = "SPContext";
         private const string SPCacheKeyKey = "SPCacheKey";
-        private readonly ICacheProvider<SharePointLowTrustContext> _sessionProvider;
+        private readonly ICacheProvider _sessionProvider;
 
         public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper) : base(tokenHelper)
         {
             _sessionProvider = null;
         }
 
-        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper, ICacheProvider<SharePointLowTrustContext> sessionProvider) : base(tokenHelper)
+        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper, ICacheProvider sessionProvider) : base(tokenHelper)
         {
             _sessionProvider = sessionProvider;
         }
@@ -77,7 +77,7 @@ namespace SharePoint.Authentication
         {
             if (_sessionProvider == null) return null;
             
-            return await _sessionProvider.GetAsync(SPContextKey, null);
+            return await _sessionProvider.GetAsync<SharePointLowTrustContext>(SPContextKey, null);
         }
 
         protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)
@@ -103,7 +103,7 @@ namespace SharePoint.Authentication
 
         protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
         {
-            return _sessionProvider?.Get(SPContextKey);
+            return _sessionProvider?.Get<SharePointLowTrustContext>(SPContextKey, null);
         }
 
         protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)

@@ -112,8 +112,8 @@ namespace SharePoint.Authentication.Owin
             const string memoryGroup = "SharePoint.Authentication.AADAccess";
             const string key = "PublicKeys";
 
-            var cacheProvider = dependencyScope.Resolve<ICacheProvider<List<SecurityKey>>>() ?? new MemoryCacheProvider<List<SecurityKey>>(memoryGroup, 12 * 60, true);
-            var lockProvider = dependencyScope.Resolve<ILockProvider<List<SecurityKey>>>() ?? new LockProvider<List<SecurityKey>>(memoryGroup);
+            var cacheProvider = dependencyScope.Resolve<ICacheProvider>() ?? new MemoryCacheProvider(memoryGroup, 12 * 60, true);
+            var lockProvider = dependencyScope.Resolve<ILockProvider>() ?? new LockProvider(memoryGroup);
 
             return lockProvider.PerformActionLocked(key, () => cacheProvider.Get(key, GetPublicKeys));
         }
@@ -149,8 +149,8 @@ namespace SharePoint.Authentication.Owin
         private async Task<string> GetAccessToken(IDependencyScope dependencyScope, IOwinContext owin)
         {
             const string memoryGroup = "SharePoint.Authentication.SharePointSession";
-            var cacheProvider = dependencyScope.Resolve<ICacheProvider<(string spHostUrl, string accessToken)>>() ?? new MemoryCacheProvider<(string spHostUrl, string accessToken)>(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
-            var lockProvider = dependencyScope.Resolve<ILockProvider<(string spHostUrl, string accessToken)>>() ?? new LockProvider<(string spHostUrl, string accessToken)>(memoryGroup);
+            var cacheProvider = dependencyScope.Resolve<ICacheProvider>() ?? new MemoryCacheProvider(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
+            var lockProvider = dependencyScope.Resolve<ILockProvider>() ?? new LockProvider(memoryGroup);
             var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
             var sharePointSessionProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
 
