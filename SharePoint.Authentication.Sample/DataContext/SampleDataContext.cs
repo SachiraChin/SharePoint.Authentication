@@ -13,5 +13,6 @@ namespace SharePoint.Authentication.Sample.DataContext
         }
 
         public DbSet<SampleSharePointSession> SampleSharePointSessions { get; set; }
+        public DbSet<SampleHighTrustCredentials> SampleHighTrustCredentials { get; set; }
     }
 }

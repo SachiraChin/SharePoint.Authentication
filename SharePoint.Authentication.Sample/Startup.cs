@@ -11,6 +11,7 @@ using Microsoft.Practices.Unity.WebApi;
 using Owin;
 using SharePoint.Authentication.Caching;
 using SharePoint.Authentication.Owin;
+using SharePoint.Authentication.Owin.AuthenticationParameters;
 using SharePoint.Authentication.Sample.Authentication;
 
 [assembly: OwinStartup(typeof(SharePoint.Authentication.Sample.Startup))]
@@ -52,7 +53,7 @@ namespace SharePoint.Authentication.Sample
         {
             var container = new UnityContainer();
             container.RegisterType<LowTrustAuthenticationParameters, SampleLowTrustAuthenticationParameters>(new HierarchicalLifetimeManager());
-            container.RegisterType<HighTrustAuthenticationParameters, SampleHighTrustAuthenticationParameters>(new HierarchicalLifetimeManager());
+            container.RegisterType<HighTrustAuthenticationParameters, OwinHighTrustAuthenticationParameters>(new HierarchicalLifetimeManager());
             container.RegisterType<LowTrustTokenHelper>(new HierarchicalLifetimeManager());
             container.RegisterType<HighTrustTokenHelper>(new HierarchicalLifetimeManager());
 

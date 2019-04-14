@@ -9,5 +9,7 @@ namespace SharePoint.Authentication.Owin
         Task SaveSharePointSession(Guid sessionId, SharePointSession sharePointSession);
         Task UpdateSharePointSession(Guid sessionId, SharePointSession sharePointSession);
         Task<SharePointSession> GetSharePointSession(Guid sessionId);
+        Task SaveHighTrustCredentials(HighTrustCredentials highTrustCredentials);
+        Task<HighTrustCredentials> GetHighTrustCredentials(string spHostWebUrl);
     }
 }

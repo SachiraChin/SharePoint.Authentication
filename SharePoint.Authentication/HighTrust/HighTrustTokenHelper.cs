@@ -13,7 +13,7 @@ namespace SharePoint.Authentication
             _authenticationParameters = authenticationParameters;
         }
 
-        public Task<ClientContext> GetAzureADAppOnlyAuthenticatedContext(string webUrl)
+        public Task<ClientContext> GetAppOnlyAuthenticatedContext(string webUrl)
         {
             var siteUri = new Uri(webUrl);
             var at = GetAppOnlyAccessToken(TokenHelper.SharePointPrincipal, siteUri.Authority, GetRealmFromTargetUrl(siteUri));

@@ -205,17 +205,21 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Authentication\SampleLowTrustAuthenticationParameters.cs" />
-    <Compile Include="Authentication\SampleHighTrustAuthenticationParameters.cs" />
     <Compile Include="Authentication\SampleSharePointSessionProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DataContext\SampleDataContext.cs" />
+    <Compile Include="DataContext\SampleHighTrustCredentials.cs" />
     <Compile Include="DataContext\SampleSharePointSession.cs" />
     <Compile Include="DataContext\StringCipher.cs" />
     <Compile Include="Migrations\201904131320419_Initial.cs" />
     <Compile Include="Migrations\201904131320419_Initial.Designer.cs">
       <DependentUpon>201904131320419_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904140702040_SampleHighTrustCredentials.cs" />
+    <Compile Include="Migrations\201904140702040_SampleHighTrustCredentials.Designer.cs">
+      <DependentUpon>201904140702040_SampleHighTrustCredentials.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -270,6 +274,10 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <EmbeddedResource Include="Migrations\201904140702040_SampleHighTrustCredentials.resx">
+      <DependentUpon>201904140702040_SampleHighTrustCredentials.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\HighTrustAppPackage.app" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

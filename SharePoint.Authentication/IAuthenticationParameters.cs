@@ -7,18 +7,18 @@ namespace SharePoint.Authentication
 {
     public interface IAuthenticationParameters
     {
-        string ClientId { get; }
-        string ClientSecret { get; }
-        string IssuerId { get; }
-        string HostedAppHostNameOverride { get; }
-        string HostedAppHostName { get; }
-        string SecondaryClientSecret { get; }
-        string Realm { get; }
-        string ServiceNamespace { get; }
+        string ClientId { get; set; }
+        string ClientSecret { get; set; }
+        string IssuerId { get; set; }
+        string HostedAppHostNameOverride { get; set; }
+        string HostedAppHostName { get; set; }
+        string SecondaryClientSecret { get; set; }
+        string Realm { get; set; }
+        string ServiceNamespace { get; set; }
 
-        string SigningCertificatePath { get; }
-        string SigningCertificatePassword { get; }
-        X509Certificate2 Certificate { get; }
-        X509SigningCredentials SigningCredentials { get; }
+        string SigningCertificatePath { get; set; }
+        string SigningCertificatePassword { get; set; }
+        X509Certificate2 Certificate { get; set; }
+        X509SigningCredentials SigningCredentials { get; set; }
     }
 }

@@ -9,20 +9,17 @@ namespace SharePoint.Authentication.Owin.Helpers
     {
         public static T Get<T, TS>(string name)
         {
-            using (var stream = Get<TS>(name))
-            {
-                if (typeof(T) == typeof(string))
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        return (T)(object)reader.ReadToEnd();
-                    }
-                }
+            using var stream = Get<TS>(name);
 
-                var xmlSerializer = new XmlSerializer(typeof(T));
-                var obj = (T)xmlSerializer.Deserialize(stream ?? throw new InvalidOperationException());
-                return obj;
+            if (typeof(T) == typeof(string))
+            {
+                using var reader = new StreamReader(stream);
+                return (T)(object)reader.ReadToEnd();
             }
+
+            var xmlSerializer = new XmlSerializer(typeof(T));
+            var obj = (T)xmlSerializer.Deserialize(stream ?? throw new InvalidOperationException());
+            return obj;
         }
 
         public static Stream Get<TS>(string name)

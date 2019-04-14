@@ -53,52 +53,51 @@ namespace SharePoint.Authentication.Owin
                                                                 $"Referer: {(owin.Request.Headers.ContainsKey("Referer") ? owin.Request.Headers["Referer"] : null)}, ");
                 }
 
-                using (var dependencyScope = _sharePointAuthenticationOptions.DependencyResolver.BeginScope())
+                using var dependencyScope = _sharePointAuthenticationOptions.DependencyResolver.BeginScope();
+
+                var token = await GetAccessToken(dependencyScope, owin);
+
+                if (token == null)
                 {
-                    var token = await GetAccessToken(dependencyScope, owin);
-
-                    if (token == null)
-                    {
-                        throw new SharePointAuthenticationException("Context token is null");
-                    }
-
-                    var tokenValidationParameters = new TokenValidationParameters
-                    {
-                        //// The signing key must match!
-                        ValidateIssuerSigningKey = false,
-                        //IssuerSigningKey = new InMemorySymmetricSecurityKey(secret),
-
-                        //// Validate the JWT Issuer (iss) claim
-                        ValidateIssuer = false,
-                        //ValidIssuer = issuer,
-
-                        //// Validate the JWT Audience (aud) claim
-                        ValidateAudience = false,
-                        //ValidAudience = audience,
-
-                        // Validate the token expiry
-                        ValidateLifetime = true,
-
-                        // If you want to allow a certain amount of clock drift, set that here:
-                        ClockSkew = TimeSpan.Zero,
-
-                        RequireSignedTokens = false,
-
-                        IssuerSigningKeys = GetPublicKeysCached(dependencyScope)
-                    };
-
-                    var principal = handler.ValidateToken(token, tokenValidationParameters, out var validToken);
-
-                    if (!(validToken is JwtSecurityToken))
-                    {
-                        throw new SharePointAuthenticationException("Invalid JWT");
-                    }
-
-                    if (!(principal.Identity is ClaimsIdentity identity))
-                        return new AuthenticationTicket(null, new AuthenticationProperties());
-
-                    return new AuthenticationTicket(identity, new AuthenticationProperties());
+                    throw new SharePointAuthenticationException("Context token is null");
                 }
+
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    //// The signing key must match!
+                    ValidateIssuerSigningKey = false,
+                    //IssuerSigningKey = new InMemorySymmetricSecurityKey(secret),
+
+                    //// Validate the JWT Issuer (iss) claim
+                    ValidateIssuer = false,
+                    //ValidIssuer = issuer,
+
+                    //// Validate the JWT Audience (aud) claim
+                    ValidateAudience = false,
+                    //ValidAudience = audience,
+
+                    // Validate the token expiry
+                    ValidateLifetime = true,
+
+                    // If you want to allow a certain amount of clock drift, set that here:
+                    ClockSkew = TimeSpan.Zero,
+
+                    RequireSignedTokens = false,
+
+                    IssuerSigningKeys = GetPublicKeysCached(dependencyScope)
+                };
+
+                var principal = handler.ValidateToken(token, tokenValidationParameters, out var validToken);
+
+                if (!(validToken is JwtSecurityToken))
+                {
+                    throw new SharePointAuthenticationException("Invalid JWT");
+                }
+
+                if (!(principal.Identity is ClaimsIdentity identity))
+                    return new AuthenticationTicket(null, new AuthenticationProperties());
+
+                return new AuthenticationTicket(identity, new AuthenticationProperties());
             }
             catch (Exception ex)
             {
@@ -150,27 +149,27 @@ namespace SharePoint.Authentication.Owin
         private async Task<string> GetAccessToken(IDependencyScope dependencyScope, IOwinContext owin)
         {
             const string memoryGroup = "SharePoint.Authentication.SharePointSession";
-            var cacheProvider = dependencyScope.Resolve<ICacheProvider<string>>() ?? new MemoryCacheProvider<string>(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
-            var lockProvider = dependencyScope.Resolve<ILockProvider<string>>() ?? new LockProvider<string>(memoryGroup);
+            var cacheProvider = dependencyScope.Resolve<ICacheProvider<(string spHostUrl, string accessToken)>>() ?? new MemoryCacheProvider<(string spHostUrl, string accessToken)>(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
+            var lockProvider = dependencyScope.Resolve<ILockProvider<(string spHostUrl, string accessToken)>>() ?? new LockProvider<(string spHostUrl, string accessToken)>(memoryGroup);
             var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
-            var contextTokenProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
+            var sharePointSessionProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
 
-            async Task<string> GetNewAccessToken(Guid sessionId)
+            async Task<(string spHostUrl, string accessToken)> GetNewAccessToken(Guid sessionId)
             {
                 try
                 {
-                    var sharePointSession = await contextTokenProvider.GetSharePointSession(sessionId);
+                    var sharePointSession = await sharePointSessionProvider.GetSharePointSession(sessionId);
                     var contextTokenObj = lowTrustTokenHelper.ReadAndValidateContextToken(sharePointSession.ContextToken, sharePointSession.ContextTokenAuthority);
 
                     if (contextTokenObj.ValidTo < DateTimeOffset.Now)
-                        return null;
+                        return (null, null);
 
                     var accessToken = lowTrustTokenHelper.GetAccessToken(contextTokenObj, new Uri(sharePointSession.SharePointHostWebUrl).Authority);
-                    return accessToken.AccessToken;
+                    return (sharePointSession.SharePointHostWebUrl, accessToken.AccessToken);
                 }
                 catch (Exception)
                 {
-                    return null;
+                    return (null, null);
                 }
             }
 
@@ -183,10 +182,12 @@ namespace SharePoint.Authentication.Owin
                 }
 
                 var cacheKey = sessionId.ToString("N");
-                var accessToken = await lockProvider.PerformActionLockedAsync(cacheKey,
-                    () => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId)));
+                var (spHostUrl, accessToken) = await lockProvider.PerformActionLockedAsync(cacheKey,() => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId)));
 
                 if (string.IsNullOrWhiteSpace(accessToken)) continue;
+
+                owin.Set("SharePointHostWebUrl", spHostUrl);
+                owin.Set("SharePointAccessToken", accessToken);
 
                 return accessToken;
             }
