@@ -120,30 +120,27 @@ namespace SharePoint.Authentication.Owin
 
         public static List<SecurityKey> GetPublicKeys()
         {
-            using (var client = new WebClient())
+            using var client = new WebClient();
+            var openIdConfigStr = client.DownloadString("https://login.microsoftonline.com/common/.well-known/openid-configuration");
+            var openIdConfig = JsonConvert.DeserializeObject<AADOpenIdConfig>(openIdConfigStr);
+            var jwKeys = client.DownloadString(openIdConfig.jwks_uri);
+            var response = JsonConvert.DeserializeObject<AADPublicKeys>(jwKeys);
+
+            var keys = new List<SecurityKey>();
+            foreach (var webKey in response.keys)
             {
-                var openIdConfigStr = client.DownloadString("https://login.microsoftonline.com/common/.well-known/openid-configuration");
-                var openIdConfig = JsonConvert.DeserializeObject<AADOpenIdConfig>(openIdConfigStr);
-                var jwkeys = client.DownloadString(openIdConfig.jwks_uri);
-                var response = JsonConvert.DeserializeObject<AADPublicKeys>(jwkeys);
+                var e = Decode(webKey.e);
+                var n = Decode(webKey.n);
 
-                var keys = new List<SecurityKey>();
-                foreach (var webKey in response.keys)
+                var key = new RsaSecurityKey(new RSAParameters { Exponent = e, Modulus = n })
                 {
-                    var e = Decode(webKey.e);
-                    var n = Decode(webKey.n);
+                    KeyId = webKey.kid
+                };
 
-                    var key = new RsaSecurityKey(new RSAParameters { Exponent = e, Modulus = n })
-                    {
-                        KeyId = webKey.kid
-                    };
-
-                    keys.Add(key);
-                }
-
-                return keys;
+                keys.Add(key);
             }
 
+            return keys;
         }
 
         private async Task<string> GetAccessToken(IDependencyScope dependencyScope, IOwinContext owin)
@@ -151,25 +148,37 @@ namespace SharePoint.Authentication.Owin
             const string memoryGroup = "SharePoint.Authentication.SharePointSession";
             var cacheProvider = dependencyScope.Resolve<ICacheProvider>() ?? new MemoryCacheProvider(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
             var lockProvider = dependencyScope.Resolve<ILockProvider>() ?? new LockProvider(memoryGroup);
-            var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
-            var sharePointSessionProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
 
-            async Task<(string spHostUrl, string accessToken)> GetNewAccessToken(Guid sessionId)
+            async Task<CachedSession> GetNewAccessToken(Guid sessionId)
             {
                 try
                 {
+                    var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
+                    var sharePointSessionProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
                     var sharePointSession = await sharePointSessionProvider.GetSharePointSession(sessionId);
                     var contextTokenObj = lowTrustTokenHelper.ReadAndValidateContextToken(sharePointSession.ContextToken, sharePointSession.ContextTokenAuthority);
 
                     if (contextTokenObj.ValidTo < DateTimeOffset.Now)
-                        return (null, null);
+                        return null;
 
-                    var accessToken = lowTrustTokenHelper.GetAccessToken(contextTokenObj, new Uri(sharePointSession.SharePointHostWebUrl).Authority);
-                    return (sharePointSession.SharePointHostWebUrl, accessToken.AccessToken);
+                    var accessTokenResponse = lowTrustTokenHelper.GetAccessToken(contextTokenObj, new Uri(sharePointSession.SharePointHostWebUrl).Authority);
+                    var cachedSession = new CachedSession()
+                    {
+                        AccessToken = accessTokenResponse.AccessToken,
+                        SharePointHostWebUrl = sharePointSession.SharePointHostWebUrl,
+                    };
+
+                    if (!_sharePointAuthenticationOptions.InjectCredentialsForHighTrust) return cachedSession;
+
+                    var highTrustCredentials = await sharePointSessionProvider.GetHighTrustCredentials(sharePointSession.SharePointHostWebUrl);
+                    cachedSession.HighTrustClientId = highTrustCredentials.ClientId;
+                    cachedSession.HighTrustClientSecret = highTrustCredentials.ClientSecret;
+
+                    return cachedSession;
                 }
                 catch (Exception)
                 {
-                    return (null, null);
+                    return null;
                 }
             }
 
@@ -182,14 +191,13 @@ namespace SharePoint.Authentication.Owin
                 }
 
                 var cacheKey = sessionId.ToString("N");
-                var (spHostUrl, accessToken) = await lockProvider.PerformActionLockedAsync(cacheKey,() => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId)));
+                var session = await lockProvider.PerformActionLockedAsync(cacheKey,() => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId)));
 
-                if (string.IsNullOrWhiteSpace(accessToken)) continue;
+                if (string.IsNullOrWhiteSpace(session.AccessToken)) continue;
 
-                owin.Set("SharePointHostWebUrl", spHostUrl);
-                owin.Set("SharePointAccessToken", accessToken);
+                owin.Set("CachedSession", session);
 
-                return accessToken;
+                return session.AccessToken;
             }
 
             return null;

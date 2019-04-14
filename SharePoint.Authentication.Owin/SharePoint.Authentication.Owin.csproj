@@ -147,11 +147,13 @@
     <Compile Include="Exceptions\CanNotRedirectException.cs" />
     <Compile Include="Exceptions\SharePointHostUrlNotAvailableException.cs" />
     <Compile Include="Extensions\DependencyScopeExtensions.cs" />
+    <Compile Include="Extensions\TokenHelperExtensions.cs" />
     <Compile Include="Helpers\EmbeddedData.cs" />
     <Compile Include="ISharePointSessionProvider.cs" />
     <Compile Include="Models\AADOpenIdConfig.cs" />
     <Compile Include="Models\AADPublicKey.cs" />
     <Compile Include="Models\AADPublicKeys.cs" />
+    <Compile Include="Models\CachedSession.cs" />
     <Compile Include="Models\HighTrustCredentials.cs" />
     <Compile Include="Models\SharePointSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

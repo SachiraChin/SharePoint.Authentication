@@ -159,12 +159,12 @@ namespace SharePoint.Authentication.Owin.Controllers
                             {
                                 using (var xmlTextWriter = XmlWriter.Create(stringWriter))
                                 {
-                                    var credentials = await _sharePointSessionProvider.GetHighTrustCredentials(HttpContext.Current.GetOwinContext().Get<string>("SharePointHostWebUrl"));
+                                    var cachedSession = HttpContext.Current.GetOwinContext().Get<CachedSession>("CachedSession");
 
                                     var clientIdNode = appManifestXmlDocument.DocumentElement?["AppPrincipal"]?["RemoteWebApplication"];
                                     if (clientIdNode?.Attributes != null)
                                     {
-                                        clientIdNode.Attributes["ClientId"].Value = credentials.ClientId;
+                                        clientIdNode.Attributes["ClientId"].Value = cachedSession.HighTrustClientId;
                                     }
                                     var startPageNode = appManifestXmlDocument.DocumentElement?["Properties"]?["StartPage"];
                                     if (startPageNode != null)
