@@ -56,12 +56,6 @@ namespace SharePoint.Authentication.Sample
             container.RegisterType<LowTrustTokenHelper>(new HierarchicalLifetimeManager());
             container.RegisterType<HighTrustTokenHelper>(new HierarchicalLifetimeManager());
 
-            container.RegisterType<ICacheProvider<SharePointLowTrustContext>>(new HierarchicalLifetimeManager(), new InjectionFactory(c => null));
-            container.RegisterType<ICacheProvider<SharePointHighTrustContext>>(new HierarchicalLifetimeManager(), new InjectionFactory(c => null));
-
-            container.RegisterType<SharePointLowTrustContextProvider>(new HierarchicalLifetimeManager());
-            container.RegisterType<SharePointHighTrustContextProvider>(new HierarchicalLifetimeManager());
-
             container.RegisterType<ISharePointSessionProvider, SampleSharePointSessionProvider>(new HierarchicalLifetimeManager());
 
             return container;

@@ -12,7 +12,7 @@ namespace SharePoint.Authentication.Sample.Controllers
     [RoutePrefix("login")]
     public class LoginController : SharePointLoginController
     {
-        public LoginController(LowTrustTokenHelper lowTrustTokenHelper, SharePointLowTrustContextProvider lowTrustContextProvider, ISharePointSessionProvider sharePointSessionProvider) : base(lowTrustTokenHelper, lowTrustContextProvider, sharePointSessionProvider)
+        public LoginController(LowTrustTokenHelper lowTrustTokenHelper, ISharePointSessionProvider sharePointSessionProvider) : base(lowTrustTokenHelper, sharePointSessionProvider)
         {
         }
 
@@ -21,18 +21,6 @@ namespace SharePoint.Authentication.Sample.Controllers
         public override Task<HttpResponseMessage> LowTrustLoginAsync()
         {
             return base.LowTrustLoginAsync();
-        }
-
-        [HttpPost]
-        [Route("callback/{sessionId}")]
-        public override Task<HttpResponseMessage> LowTrustLoginCallbackAsync(string sessionId)
-        {
-            return base.LowTrustLoginCallbackAsync(sessionId);
-        }
-
-        public override Task<string> GetCallbackUrlAsync(string sessionId)
-        {
-            return Task.FromResult($"https://spauthtest.com:44388/login/callback/{sessionId}");
         }
     }
 }
