@@ -16,6 +16,7 @@ namespace SharePoint.Authentication.Controllers
 {
     public abstract class SharePointLoginController : ApiController
     {
+        public virtual string LowTrustLandingPageUrl { get; } = "/";
         private readonly LowTrustTokenHelper _lowTrustTokenHelper;
         private readonly ISharePointSessionProvider _sharePointSessionProvider;
 
@@ -53,7 +54,7 @@ namespace SharePoint.Authentication.Controllers
 
                 await _sharePointSessionProvider.SaveSharePointSession(sessionId, sharePointSession);
 
-                var callbackResponse = EmbeddedData.Get<string, TokenHelper>("SharePoint.Authentication.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", "/");
+                var callbackResponse = EmbeddedData.Get<string, TokenHelper>("SharePoint.Authentication.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", LowTrustLandingPageUrl);
                 var sessionCookie = GetCookieHeader("session-id", sessionId.ToString("N"), this.Request.RequestUri.Host, contextTokenObj.ValidTo, true, true);
                 var response = Request.CreateResponse(HttpStatusCode.OK);
                 response.Content = new StringContent(callbackResponse, Encoding.UTF8, "text/html");
@@ -69,7 +70,7 @@ namespace SharePoint.Authentication.Controllers
             }
         }
         
-        private CookieHeaderValue GetCookieHeader(string cookieName, string cookieValue, string domain, DateTimeOffset expires, bool secure, bool httpOnly)
+        public virtual CookieHeaderValue GetCookieHeader(string cookieName, string cookieValue, string domain, DateTimeOffset expires, bool secure, bool httpOnly)
         {
             var cookie = new CookieHeaderValue(cookieName, cookieValue)
             {
