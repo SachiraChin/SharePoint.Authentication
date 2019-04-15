@@ -21,7 +21,6 @@ namespace SharePoint.Authentication.Sample.Controllers
         public async Task<ActionResult> Index()
         {
             ViewBag.Title = "Home Page";
-
             using (var context = _lowTrustTokenHelper.CreateClientContext())
             {
                 var web = context.Web;

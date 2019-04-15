@@ -254,6 +254,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Authentication\SampleLowTrustAuthenticationParameters.cs" />
+    <Compile Include="Authentication\SampleSharePointContextCacheProvider.cs" />
     <Compile Include="Authentication\SampleSharePointSessionProvider.cs" />
     <Compile Include="Controllers\ApiClientAccessController.cs" />
     <Compile Include="Controllers\HighTrustController.cs" />

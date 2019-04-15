@@ -12,14 +12,14 @@ namespace SharePoint.Authentication
     public class SharePointHighTrustContextProvider : SharePointContextProvider
     {
         private const string SPContextKey = "SPContext";
-        private readonly ICacheProvider _sessionProvider;
+        private readonly ISharePointContextCacheProvider<SharePointHighTrustContext> _sessionProvider;
 
         public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper) : base(tokenHelper)
         {
             _sessionProvider = null;
         }
 
-        public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper, ICacheProvider sessionProvider) : base(tokenHelper)
+        public SharePointHighTrustContextProvider(HighTrustTokenHelper tokenHelper, ISharePointContextCacheProvider<SharePointHighTrustContext> sessionProvider) : base(tokenHelper)
         {
             _sessionProvider = sessionProvider;
         }
@@ -58,24 +58,24 @@ namespace SharePoint.Authentication
         {
             if (_sessionProvider == null) return null;
 
-            return await _sessionProvider.GetAsync<SharePointHighTrustContext>(SPContextKey, null);
+            return await _sessionProvider.GetAsync(httpContext);
         }
 
         protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)
         {
             if (_sessionProvider == null) return;
 
-            await _sessionProvider?.SetAsync(SPContextKey, spContext as SharePointHighTrustContext);
+            await _sessionProvider?.SetAsync(httpContext, spContext as SharePointHighTrustContext);
         }
 
         protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
         {
-            return _sessionProvider?.Get<SharePointHighTrustContext>(SPContextKey, null);
+            return _sessionProvider?.Get(httpContext);
         }
 
         protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
         {
-            _sessionProvider?.SetAsync(SPContextKey, spContext as SharePointHighTrustContext);
+            _sessionProvider?.SetAsync(httpContext, spContext as SharePointHighTrustContext);
         }
     }
 }

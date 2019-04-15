@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Dependencies;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -44,13 +46,20 @@ namespace SharePoint.Authentication.Sample
 
         private void ConfigureAuth(IAppBuilder app, System.Web.Http.Dependencies.IDependencyResolver dependencyResolver)
         {
-            app.Use<SharePointAuthenticationMiddleware>(new SharePointAuthenticationOptions()
+            var sharePointAuthenticationOptions = new SharePointAuthenticationOptions()
             {
                 DependencyResolver = dependencyResolver,
                 TokenCacheDurationInMinutes = 10,
                 AllowNonBrowserRequests = false,
                 InjectCredentialsForHighTrust = true,
-            });
+            };
+            sharePointAuthenticationOptions.OnAuthenticationHandlerPostAuthenticate += OnAuthenticationHandlerPostAuthenticate;
+            app.Use<SharePointAuthenticationMiddleware>(sharePointAuthenticationOptions);
+        }
+
+        private Task OnAuthenticationHandlerPostAuthenticate(IOwinContext owinContext, IDependencyScope dependencyScope, ClaimsPrincipal principal)
+        {
+            return Task.FromResult(false);
         }
     }
 }

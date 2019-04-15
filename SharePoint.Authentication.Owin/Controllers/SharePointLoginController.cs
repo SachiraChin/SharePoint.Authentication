@@ -13,6 +13,7 @@ using System.Web;
 using System.Web.Http;
 using System.Xml;
 using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client;
 using SharePoint.Authentication.Exceptions;
 using SharePoint.Authentication.Owin.Exceptions;
 using SharePoint.Authentication.Owin.Extensions;
@@ -26,7 +27,7 @@ namespace SharePoint.Authentication.Owin.Controllers
         public virtual string LowTrustLandingPageUrl { get; } = "/";
         public virtual string HighTrustLandingPageUrl { get; } = "/";
         public virtual string HighTrustAppPackageName { get; } = "highTrust.app";
-        public abstract string HighTrustLoginPageUrl { get; }
+        public virtual string HighTrustLoginPageUrl { get; } = null;
 
         private readonly LowTrustTokenHelper _lowTrustTokenHelper;
         private readonly HighTrustTokenHelper _highTrustTokenHelper;
@@ -69,6 +70,13 @@ namespace SharePoint.Authentication.Owin.Controllers
 
                 await _sharePointSessionProvider.SaveSharePointSession(sessionId, sharePointSession);
 
+
+                var accessTokenResponse = _lowTrustTokenHelper.GetAccessToken(contextTokenObj, new Uri(spHostUrl).Authority);
+                using (var clientContext = _lowTrustTokenHelper.GetClientContextWithAccessToken(spHostUrl, accessTokenResponse.AccessToken))
+                {
+                    await LowTrustPostAuthenticationAsync(clientContext);
+                }
+
                 var callbackResponse = EmbeddedData.Get<string, ISharePointSessionProvider>("SharePoint.Authentication.Owin.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", LowTrustLandingPageUrl);
                 var sessionCookie = GetCookieHeader("session-id", sessionId.ToString("N"), Request.RequestUri.Host, contextTokenObj.ValidTo, true, true);
                 var response = Request.CreateResponse(HttpStatusCode.OK);
@@ -83,6 +91,11 @@ namespace SharePoint.Authentication.Owin.Controllers
                 response.Headers.Location = redirectUrl ?? throw new CanNotRedirectException();
                 return response;
             }
+        }
+
+        public virtual Task LowTrustPostAuthenticationAsync(ClientContext clientContext)
+        {
+            return Task.FromResult(false);
         }
 
         public virtual async Task<HttpResponseMessage> HighTrustLoginAsync()
@@ -114,6 +127,8 @@ namespace SharePoint.Authentication.Owin.Controllers
                 context.Load(context.Web);
                 await context.ExecuteQueryAsync();
 
+                await HighTrustPostAuthenticationAsync(context);
+
                 var callbackResponse = EmbeddedData.Get<string, ISharePointSessionProvider>("SharePoint.Authentication.Owin.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", HighTrustLandingPageUrl);
                 var response = Request.CreateResponse(HttpStatusCode.OK);
                 response.Content = new StringContent(callbackResponse, Encoding.UTF8, "text/html");
@@ -123,6 +138,12 @@ namespace SharePoint.Authentication.Owin.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized);
             }
+        }
+
+
+        public virtual Task HighTrustPostAuthenticationAsync(ClientContext clientContext)
+        {
+            return Task.FromResult(false);
         }
 
         [SuppressMessage("ReSharper", "UseUsingVarLocalVariable")]
@@ -211,7 +232,10 @@ namespace SharePoint.Authentication.Owin.Controllers
             }
         }
 
-        public abstract Task<Stream> GetHighTrustAddInPackage();
+        public virtual Task<Stream> GetHighTrustAddInPackage()
+        {
+            return Task.FromResult<Stream>(null);
+        }
 
         public virtual CookieHeaderValue GetCookieHeader(string cookieName, string cookieValue, string domain, DateTimeOffset expires, bool secure, bool httpOnly)
         {

@@ -11,11 +11,11 @@ namespace SharePoint.Authentication.Caching
         // This locked shared by all instances of this class. Staticness and concurrency is expected and handled
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> StaticKeyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
+        public ConcurrentDictionary<string, SemaphoreSlim> KeyLocks => StaticKeyLocks;
+
         public LockProvider(string memoryGroup) : base(memoryGroup)
         {
         }
-
-        public ConcurrentDictionary<string, SemaphoreSlim> KeyLocks => StaticKeyLocks;
 
         public async Task<T> PerformActionLockedAsync<T>(string key, Func<Task<T>> action)
         {

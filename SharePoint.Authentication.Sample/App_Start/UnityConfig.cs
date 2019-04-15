@@ -1,10 +1,13 @@
+using SharePoint.Authentication.Caching;
 using SharePoint.Authentication.Owin;
 using SharePoint.Authentication.Owin.AuthenticationParameters;
 using SharePoint.Authentication.Sample.Authentication;
 using System;
 
 using Unity;
+using Unity.Injection;
 using Unity.Lifetime;
+using Unity.Resolution;
 
 namespace SharePoint.Authentication.Sample
 {
@@ -47,10 +50,16 @@ namespace SharePoint.Authentication.Sample
             // TODO: Register your type's mappings here.
             // container.RegisterType<IProductRepository, ProductRepository>();
             //var container = new UnityContainer();
-            container.RegisterType<LowTrustAuthenticationParameters, SampleLowTrustAuthenticationParameters>(new HierarchicalLifetimeManager());
+            container.RegisterSingleton<LowTrustAuthenticationParameters, SampleLowTrustAuthenticationParameters>();
             container.RegisterType<HighTrustAuthenticationParameters, OwinHighTrustAuthenticationParameters>(new HierarchicalLifetimeManager());
             container.RegisterType<LowTrustTokenHelper>(new HierarchicalLifetimeManager());
             container.RegisterType<HighTrustTokenHelper>(new HierarchicalLifetimeManager());
+
+            //container.RegisterType<ISharePointContextCacheProvider<SharePointLowTrustContext>, SampleSharePointContextCacheProvider<SharePointLowTrustContext>>(new HierarchicalLifetimeManager());
+            //container.RegisterType<ISharePointContextCacheProvider<SharePointHighTrustContext>, SampleSharePointContextCacheProvider<SharePointHighTrustContext>>(new HierarchicalLifetimeManager());
+
+            //container.RegisterType<SharePointLowTrustContextProvider>(new HierarchicalLifetimeManager());
+            //container.RegisterType<SharePointHighTrustContextProvider>(new HierarchicalLifetimeManager());
 
             container.RegisterType<ISharePointSessionProvider, SampleSharePointSessionProvider>(new HierarchicalLifetimeManager());
 

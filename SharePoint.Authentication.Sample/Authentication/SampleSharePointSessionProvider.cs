@@ -32,21 +32,6 @@ namespace SharePoint.Authentication.Sample.Authentication
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateSharePointSession(Guid sessionId, SharePointSession sharePointSession)
-        {
-            using var context = new SampleDataContext();
-            var model = new SampleSharePointSession()
-            {
-                SessionId = sessionId,
-                ContextToken = string.IsNullOrWhiteSpace(sharePointSession.ContextToken) ? null : StringCipher.Encrypt(sharePointSession.ContextToken, VerySecurePassword),
-                ContextTokenAuthority = sharePointSession.ContextTokenAuthority,
-                SharePointAppWebUrl = sharePointSession.SharePointAppWebUrl,
-                SharePointHostWebUrl = sharePointSession.SharePointHostWebUrl,
-            };
-            context.Entry(model).State = EntityState.Modified;
-            await context.SaveChangesAsync();
-        }
-
         public async Task<SharePointSession> GetSharePointSession(Guid sessionId)
         {
             using var context = new SampleDataContext();

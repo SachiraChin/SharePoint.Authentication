@@ -97,6 +97,8 @@ namespace SharePoint.Authentication.Owin
                 if (!(principal.Identity is ClaimsIdentity identity))
                     return new AuthenticationTicket(null, new AuthenticationProperties());
 
+                await _sharePointAuthenticationOptions.InvokeOnOnAuthenticationHandlerPost(owin, dependencyScope, principal);
+
                 return new AuthenticationTicket(identity, new AuthenticationProperties());
             }
             catch (Exception ex)

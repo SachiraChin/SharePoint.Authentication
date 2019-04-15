@@ -139,6 +139,7 @@
     <Compile Include="Caching\BaseCacheExtension.cs" />
     <Compile Include="Caching\ILockProvider.cs" />
     <Compile Include="Caching\ICacheProvider.cs" />
+    <Compile Include="Caching\ISharePointContextCacheProvider.cs" />
     <Compile Include="Caching\LockProvider.cs" />
     <Compile Include="Caching\MemoryCacheProvider.cs" />
     <Compile Include="LowTrust\LowTrustAuthenticationParameters.cs" />

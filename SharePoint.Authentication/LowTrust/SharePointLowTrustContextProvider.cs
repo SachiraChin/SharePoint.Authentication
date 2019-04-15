@@ -15,14 +15,14 @@ namespace SharePoint.Authentication
     {
         private const string SPContextKey = "SPContext";
         private const string SPCacheKeyKey = "SPCacheKey";
-        private readonly ICacheProvider _sessionProvider;
+        private readonly ISharePointContextCacheProvider<SharePointLowTrustContext> _sessionProvider;
 
         public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper) : base(tokenHelper)
         {
             _sessionProvider = null;
         }
 
-        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper, ICacheProvider sessionProvider) : base(tokenHelper)
+        public SharePointLowTrustContextProvider(LowTrustTokenHelper tokenHelper, ISharePointContextCacheProvider<SharePointLowTrustContext> sessionProvider) : base(tokenHelper)
         {
             _sessionProvider = sessionProvider;
         }
@@ -77,7 +77,7 @@ namespace SharePoint.Authentication
         {
             if (_sessionProvider == null) return null;
             
-            return await _sessionProvider.GetAsync<SharePointLowTrustContext>(SPContextKey, null);
+            return await _sessionProvider.GetAsync(httpContext);
         }
 
         protected override async Task SaveSharePointContextAsync(SharePointContext spContext, HttpContextBase httpContext)
@@ -98,12 +98,12 @@ namespace SharePoint.Authentication
             
             if (_sessionProvider == null) return;
 
-            await _sessionProvider.SetAsync(SPContextKey, spLowTrustContext);
+            await _sessionProvider.SetAsync(httpContext, spLowTrustContext);
         }
 
         protected override SharePointContext LoadSharePointContext(HttpContextBase httpContext)
         {
-            return _sessionProvider?.Get<SharePointLowTrustContext>(SPContextKey, null);
+            return _sessionProvider?.Get(httpContext);
         }
 
         protected override void SaveSharePointContext(SharePointContext spContext, HttpContextBase httpContext)
@@ -122,7 +122,7 @@ namespace SharePoint.Authentication
                 httpContext.Response.AppendCookie(spCacheKeyCookie);
             }
 
-            _sessionProvider?.Set(SPContextKey, spLowTrustContext);
+            _sessionProvider?.Set(httpContext, spLowTrustContext);
         }
     }
 }

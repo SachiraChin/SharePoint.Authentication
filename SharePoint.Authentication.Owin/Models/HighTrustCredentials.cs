@@ -34,7 +34,7 @@ namespace SharePoint.Authentication.Owin.Models
             if (string.IsNullOrWhiteSpace(clientIdSalt) || string.IsNullOrWhiteSpace(clientSecretSalt) || clientIdSalt.Equals(clientSecretSalt, StringComparison.InvariantCultureIgnoreCase))
                 throw new SharePointAuthenticationException($"Invalid {nameof(clientIdSalt)} or {nameof(clientSecretSalt)}");
 
-            var clientId = new Guid(GetMD5Bytes(GetSha512Bytes(spHostWebUrl))).ToString("D");
+            var clientId = new Guid(GetMD5Bytes(GetSha512Bytes(spHostWebUrl + clientIdSalt))).ToString("D");
             var clientSecret = GetSha256(spHostWebUrl + clientSecretSalt);
 
             var credentials = new HighTrustCredentials()

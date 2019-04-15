@@ -9,6 +9,5 @@ namespace SharePoint.Authentication.Caching
     {
         Task<T> PerformActionLockedAsync<T>(string key, Func<Task<T>> action);
         T PerformActionLocked<T>(string key, Func<T> action);
-        ConcurrentDictionary<string, SemaphoreSlim> KeyLocks { get; }
     }
 }
