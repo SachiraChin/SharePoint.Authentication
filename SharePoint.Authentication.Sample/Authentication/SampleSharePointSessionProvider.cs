@@ -84,6 +84,7 @@ namespace SharePoint.Authentication.Sample.Authentication
             using var context = new SampleDataContext();
             var spHostWebUrlHash = GetSha256(spHostWebUrl);
             var dbModel = await context.SampleHighTrustCredentials.FirstOrDefaultAsync(c => c.SharePointHostWebUrlHash == spHostWebUrlHash);
+            if (dbModel == null) return null;
 
             return new HighTrustCredentials()
             {

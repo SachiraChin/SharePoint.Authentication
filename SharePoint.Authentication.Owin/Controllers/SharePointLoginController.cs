@@ -13,7 +13,9 @@ using System.Web;
 using System.Web.Http;
 using System.Xml;
 using Microsoft.Online.SharePoint.TenantAdministration;
+using SharePoint.Authentication.Exceptions;
 using SharePoint.Authentication.Owin.Exceptions;
+using SharePoint.Authentication.Owin.Extensions;
 using SharePoint.Authentication.Owin.Helpers;
 using SharePoint.Authentication.Owin.Models;
 
@@ -129,6 +131,8 @@ namespace SharePoint.Authentication.Owin.Controllers
             if (this.User.Identity.IsAuthenticated == false)
                 return Request.CreateResponse(HttpStatusCode.Unauthorized);
 
+            var sharePointHostWebUrl = this.Request.GetSharePointHostWebUrl() ?? throw new SharePointAuthenticationException("SharePoint host url not found.");
+
             using (var appStream = await GetHighTrustAddInPackage())
             {
                 using (var tempStream = new MemoryStream())
@@ -159,12 +163,12 @@ namespace SharePoint.Authentication.Owin.Controllers
                             {
                                 using (var xmlTextWriter = XmlWriter.Create(stringWriter))
                                 {
-                                    var cachedSession = HttpContext.Current.GetOwinContext().Get<CachedSession>("CachedSession");
+                                    var highTrustCredentials = await _sharePointSessionProvider.GetHighTrustCredentials(sharePointHostWebUrl);
 
                                     var clientIdNode = appManifestXmlDocument.DocumentElement?["AppPrincipal"]?["RemoteWebApplication"];
                                     if (clientIdNode?.Attributes != null)
                                     {
-                                        clientIdNode.Attributes["ClientId"].Value = cachedSession.HighTrustClientId;
+                                        clientIdNode.Attributes["ClientId"].Value = highTrustCredentials.ClientId;
                                     }
                                     var startPageNode = appManifestXmlDocument.DocumentElement?["Properties"]?["StartPage"];
                                     if (startPageNode != null)
@@ -221,30 +225,6 @@ namespace SharePoint.Authentication.Owin.Controllers
             };
 
             return cookie;
-        }
-
-        public virtual async Task<HighTrustCredentials> CreateHighTrustCredentials(string spHostWebUrl)
-        {
-            var clientId = Guid.NewGuid().ToString("D");
-            var clientSecret = GetSha256(Guid.NewGuid().ToString("D"));
-
-            var credentials = new HighTrustCredentials()
-            {
-                SharePointHostWebUrl = spHostWebUrl,
-                ClientId = clientId,
-                ClientSecret = clientSecret,
-            };
-
-            await _sharePointSessionProvider.SaveHighTrustCredentials(credentials);
-
-            return credentials;
-        }
-
-        public static string GetSha256(string str)
-        {
-            using var crypt = new SHA256Managed();
-            var crypto = crypt.ComputeHash(Encoding.ASCII.GetBytes(str));
-            return Convert.ToBase64String(crypto);
         }
     }
 }

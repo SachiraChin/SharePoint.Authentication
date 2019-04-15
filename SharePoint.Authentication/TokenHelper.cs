@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.S2S.Tokens;
 using Microsoft.IdentityModel.SecurityTokenService;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
+using SharePoint.Authentication.Exceptions;
 using SharePoint.Authentication.Tokens;
 using AudienceRestriction = Microsoft.IdentityModel.Tokens.AudienceRestriction;
 using AudienceUriValidationFailedException = Microsoft.IdentityModel.Tokens.AudienceUriValidationFailedException;
@@ -342,8 +343,7 @@ namespace SharePoint.Authentication
             {
                 if (string.IsNullOrEmpty(_authenticationParameters.SecondaryClientSecret))
                 {
-                    // throw new Exception($"targetPrincipalName={targetPrincipalName},targetHost={targetHost},targetRealm={targetRealm},stsUrl={stsUrl},clientId={clientId.GetLogSafeString()},resource={resource},clientSecret={_authenticationParameters.ClientSecret.GetLogSafeString()}", e);
-                    throw new Exception("Secondary client secret does not exists");
+                    throw;
                 }
 
                 try
@@ -355,8 +355,7 @@ namespace SharePoint.Authentication
                 }
                 catch (Exception e2)
                 {
-                    // throw new Exception($"targetPrincipalName={targetPrincipalName},targetHost={targetHost},targetRealm={targetRealm},stsUrl={stsUrl},clientId={clientId.GetLogSafeString()},resource={resource},secondaryClientSecret={_authenticationParameters.SecondaryClientSecret.GetLogSafeString()}", e2);
-                    throw e2;
+                    throw new SharePointAuthenticationException("Secondary client id, secret validation failed.", e2);
                 }
             }
             catch (WebException wex)

@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Client Side API Access";
+    Layout = "../Shared/_Layout.cshtml";
+}
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.getJSON("/api/values", function (response) {
+                var responseJson = JSON.stringify(response);
+                $("#apiResponse").html("Endpoint: /api/values<br />Response: " + responseJson);
+            });
+        });
+    </script>
+}
+<h2>Client Side API Access</h2>
+<div id="apiResponse">
+
+</div>

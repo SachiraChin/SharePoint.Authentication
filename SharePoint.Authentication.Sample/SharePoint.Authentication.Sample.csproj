@@ -255,6 +255,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Authentication\SampleLowTrustAuthenticationParameters.cs" />
     <Compile Include="Authentication\SampleSharePointSessionProvider.cs" />
+    <Compile Include="Controllers\ApiClientAccessController.cs" />
     <Compile Include="Controllers\HighTrustController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -329,6 +330,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\HighTrustAppPackage.app" />
     <Content Include="Views\HighTrust\Index.cshtml" />
+    <Content Include="Views\ApiClientAccess\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

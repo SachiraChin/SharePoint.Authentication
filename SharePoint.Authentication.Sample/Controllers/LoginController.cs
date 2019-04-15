@@ -36,7 +36,7 @@ namespace SharePoint.Authentication.Sample.Controllers
             return base.HighTrustLoginAsync();
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("high-trust-package")]
         [Authorize]
         public override Task<HttpResponseMessage> DownloadHighTrustAddInAsync()

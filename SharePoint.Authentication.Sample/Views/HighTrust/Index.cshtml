@@ -1,8 +1,42 @@
-﻿
+﻿@model SharePoint.Authentication.Owin.Models.HighTrustCredentials
 @{
     ViewBag.Title = "High Trust";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h1>SharePoint high trust connection</h1>
 
+<p><b>Client id: </b> @Model.ClientId</p>
+<p><b>Client secret: </b> @Model.ClientSecret</p>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>SharePoint High Trust Connection</h2>
+        <p><b>Host web title:</b> @ViewBag.SiteTitle</p>
+        <p><b>User name:</b> @ViewBag.UserTitle</p>
+        <p><b>User is site admin:</b> @ViewBag.UserIsSiteAdmin</p>
+        <p style="color: red">@ViewBag.HighTrustValidationMessage</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h2>Setup SharePoint High App</h2>
+        <ol>
+            <li>Go to app registration page -> <a href="@Model.SharePointHostWebUrl/_layouts/15/AppRegNew.aspx" target="_blank">@Model.SharePointHostWebUrl/_layouts/15/AppRegNew.aspx</a></li>
+            <li>
+                Register new app with below details.
+                <ul>
+                    <li>Client id: @Model.ClientId</li>
+                    <li>Client secret: @Model.ClientSecret</li>
+                    <li>Title: Sample high trust app</li>
+                    <li>App domain: @(new Uri("https://spauthtest.com:44388/login/high-trust").Authority)</li>
+                    <li>Redirect uri: https://spauthtest.com:44388/login/high-trust</li>
+                </ul>
+            </li>
+            <li>Download app package (zip) -> <a href="https://spauthtest.com:44388/login/high-trust-package" target="_blank">https://spauthtest.com:44388/login/high-trust-package</a></li>
+            <li>Go to app catalog and install downloaded app package (unzip first)</li>
+            <li>Go to Site contents and install high trust app</li>
+            <li>Refresh page to validate credentials</li>
+        </ol>
+    </div>
+</div>

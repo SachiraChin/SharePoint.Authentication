@@ -49,6 +49,7 @@ namespace SharePoint.Authentication.Sample
                 DependencyResolver = dependencyResolver,
                 TokenCacheDurationInMinutes = 10,
                 AllowNonBrowserRequests = false,
+                InjectCredentialsForHighTrust = true,
             });
         }
     }
