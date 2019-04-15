@@ -155,9 +155,13 @@ namespace SharePoint.Authentication.Owin
             {
                 try
                 {
-                    var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
                     var sharePointSessionProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
                     var sharePointSession = await sharePointSessionProvider.GetSharePointSession(sessionId);
+
+                    if (sharePointSession == null)
+                        return null;
+
+                    var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
                     var contextTokenObj = lowTrustTokenHelper.ReadAndValidateContextToken(sharePointSession.ContextToken, sharePointSession.ContextTokenAuthority);
 
                     if (contextTokenObj.ValidTo < DateTimeOffset.Now)
@@ -173,6 +177,9 @@ namespace SharePoint.Authentication.Owin
                     if (!_sharePointAuthenticationOptions.InjectCredentialsForHighTrust) return cachedSession;
 
                     var highTrustCredentials = await sharePointSessionProvider.GetHighTrustCredentials(sharePointSession.SharePointHostWebUrl);
+
+                    if (highTrustCredentials == null) return cachedSession;
+
                     cachedSession.HighTrustClientId = highTrustCredentials.ClientId;
                     cachedSession.HighTrustClientSecret = highTrustCredentials.ClientSecret;
 
@@ -195,7 +202,7 @@ namespace SharePoint.Authentication.Owin
                 var cacheKey = sessionId.ToString("N");
                 var session = await lockProvider.PerformActionLockedAsync(cacheKey,() => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId)));
 
-                if (string.IsNullOrWhiteSpace(session.AccessToken)) continue;
+                if (string.IsNullOrWhiteSpace(session?.AccessToken)) continue;
 
                 owin.Set("CachedSession", session);
 

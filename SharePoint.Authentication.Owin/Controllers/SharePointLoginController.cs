@@ -153,6 +153,10 @@ namespace SharePoint.Authentication.Owin.Controllers
                 return Request.CreateResponse(HttpStatusCode.Unauthorized);
 
             var sharePointHostWebUrl = this.Request.GetSharePointHostWebUrl() ?? throw new SharePointAuthenticationException("SharePoint host url not found.");
+            var highTrustCredentials = await _sharePointSessionProvider.GetHighTrustCredentials(sharePointHostWebUrl);
+
+            if (highTrustCredentials == null)
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
 
             using (var appStream = await GetHighTrustAddInPackage())
             {
@@ -184,8 +188,6 @@ namespace SharePoint.Authentication.Owin.Controllers
                             {
                                 using (var xmlTextWriter = XmlWriter.Create(stringWriter))
                                 {
-                                    var highTrustCredentials = await _sharePointSessionProvider.GetHighTrustCredentials(sharePointHostWebUrl);
-
                                     var clientIdNode = appManifestXmlDocument.DocumentElement?["AppPrincipal"]?["RemoteWebApplication"];
                                     if (clientIdNode?.Attributes != null)
                                     {

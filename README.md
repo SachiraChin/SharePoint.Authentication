@@ -190,7 +190,8 @@ This library primarily consists of 4 major components. Those are,
 
 1. Easy to use SharePoint login controller
 2. Owin authentication middleware
-3. Multi-tenant high trust package provider
+3. Authenticated client side API access
+4. Multi-tenant high trust package provider
 
 In order to use above components, you have implement ```ISharePointSessionProvider``` within your application. If you do not wish to use multi-tenant high trust package manager, you can ignore ```HighTrustCredentials``` related methods. Sample I have provided in the solution looks like below.
 
@@ -335,6 +336,29 @@ public class Startup
 Given that ```SharePointLoginController``` is implemented and login works without any issue, this middleware make sure that all controllers honors the ```[Authorize]``` attribute. This middleware has caching implemented by default so database won't get throttled by session validation queries. It also has locking mechanism in-place to manage cache coherency.
 
 Default cache provider has ```MemoryCache``` to store session data, lock provider uses ```ConcurrentDictionary``` with ```SemaphoreSlim``` to lock concurrent session invalidations. If you want to use more advanced caching and locking mechanisms, you have to implement ```ICacheProvider``` and ```ILockProvider```. You can inject new implementations via your dependency resolver and middleware will automatically will pick it up for you.
+
+#### Authenticated client side API access
+
+Well, if you have implemented above two components properly, this comes with them without any hassle. You don't need any authentication validations on client side, what you have to do is just send API requests from which ever the client side library you prefer, it will work just like that.
+
+```html
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.getJSON("/api/values", function (response) {
+                var responseJson = JSON.stringify(response);
+                $("#apiResponse").html("Endpoint: /api/values<br />Response: " + responseJson);
+            });
+        });
+    </script>
+}
+<h2>Client Side API Access</h2>
+<div id="apiResponse">
+
+</div>
+```
+
+TRUST ME, IT WORKS. ;)
 
 #### Multi-tenant high trust package provider
 
