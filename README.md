@@ -10,9 +10,18 @@ Solution I came up consists of two separate libraries, ```SharePoint.Authenticat
 
 This library is just an extension for existing code provided by Microsoft. Almost all code here is copied from Microsoft provided authentication and context provider code, I made few changes to work with scenarios described below, but all props goes to engineers who wrote it from scratch.
 
+## How to install
+
+This package is available to download via nuget package manager.
+
+```bash
+Install-Package SharePoint.Authentication
+Install-Package SharePoint.Authentication.Owin
+```
+
 ## Getting started
 
-You must implement few interfaces and abstract classes in order to use this in an application.
+You must implement few interfaces and abstract classes in order to use this in an application. Please follow steps provided in next few paragraphs to get it up and running.
 
 ### IAuthenticationParameters
 
