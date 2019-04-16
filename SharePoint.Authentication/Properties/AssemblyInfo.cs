@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SharePoint.Authentication")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Easy to use SharePoint authentication helper which can be used in complex multi-tenant scenarios.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Sachira Chinthana Jayasanka")]
 [assembly: AssemblyProduct("SharePoint.Authentication")]
 [assembly: AssemblyCopyright("Copyright © 2019")]
 [assembly: AssemblyTrademark("")]

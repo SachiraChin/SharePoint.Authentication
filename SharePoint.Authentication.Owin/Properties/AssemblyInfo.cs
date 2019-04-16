@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SharePoint.Authentication.Owin")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("This is an extension to SharePoint.Authentication library which provides Owin middleware and other tools to make fully SharePoint authentication based web application.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Sachira Chinthana Jayasanka")]
 [assembly: AssemblyProduct("SharePoint.Authentication.Owin")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
