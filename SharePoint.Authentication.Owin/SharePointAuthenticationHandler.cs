@@ -53,53 +53,54 @@ namespace SharePoint.Authentication.Owin
                                                                 $"Referer: {(owin.Request.Headers.ContainsKey("Referer") ? owin.Request.Headers["Referer"] : null)}, ");
                 }
 
-                using var dependencyScope = _sharePointAuthenticationOptions.DependencyResolver.BeginScope();
-
-                var token = await GetAccessToken(dependencyScope, owin);
-
-                if (token == null)
+                using (var dependencyScope = _sharePointAuthenticationOptions.DependencyResolver.BeginScope())
                 {
-                    throw new SharePointAuthenticationException("Context token is null");
+                    var token = await GetAccessToken(dependencyScope, owin);
+
+                    if (token == null)
+                    {
+                        throw new SharePointAuthenticationException("Context token is null");
+                    }
+
+                    var tokenValidationParameters = new TokenValidationParameters
+                    {
+                        //// The signing key must match!
+                        ValidateIssuerSigningKey = false,
+                        //IssuerSigningKey = new InMemorySymmetricSecurityKey(secret),
+
+                        //// Validate the JWT Issuer (iss) claim
+                        ValidateIssuer = false,
+                        //ValidIssuer = issuer,
+
+                        //// Validate the JWT Audience (aud) claim
+                        ValidateAudience = false,
+                        //ValidAudience = audience,
+
+                        // Validate the token expiry
+                        ValidateLifetime = true,
+
+                        // If you want to allow a certain amount of clock drift, set that here:
+                        ClockSkew = TimeSpan.Zero,
+
+                        RequireSignedTokens = false,
+
+                        IssuerSigningKeys = GetPublicKeysCached(dependencyScope)
+                    };
+
+                    var principal = handler.ValidateToken(token, tokenValidationParameters, out var validToken);
+
+                    if (!(validToken is JwtSecurityToken))
+                    {
+                        throw new SharePointAuthenticationException("Invalid JWT");
+                    }
+
+                    if (!(principal.Identity is ClaimsIdentity identity))
+                        return new AuthenticationTicket(null, new AuthenticationProperties());
+
+                    await _sharePointAuthenticationOptions.InvokeOnOnAuthenticationHandlerPost(owin, dependencyScope, principal);
+
+                    return new AuthenticationTicket(identity, new AuthenticationProperties());
                 }
-
-                var tokenValidationParameters = new TokenValidationParameters
-                {
-                    //// The signing key must match!
-                    ValidateIssuerSigningKey = false,
-                    //IssuerSigningKey = new InMemorySymmetricSecurityKey(secret),
-
-                    //// Validate the JWT Issuer (iss) claim
-                    ValidateIssuer = false,
-                    //ValidIssuer = issuer,
-
-                    //// Validate the JWT Audience (aud) claim
-                    ValidateAudience = false,
-                    //ValidAudience = audience,
-
-                    // Validate the token expiry
-                    ValidateLifetime = true,
-
-                    // If you want to allow a certain amount of clock drift, set that here:
-                    ClockSkew = TimeSpan.Zero,
-
-                    RequireSignedTokens = false,
-
-                    IssuerSigningKeys = GetPublicKeysCached(dependencyScope)
-                };
-
-                var principal = handler.ValidateToken(token, tokenValidationParameters, out var validToken);
-
-                if (!(validToken is JwtSecurityToken))
-                {
-                    throw new SharePointAuthenticationException("Invalid JWT");
-                }
-
-                if (!(principal.Identity is ClaimsIdentity identity))
-                    return new AuthenticationTicket(null, new AuthenticationProperties());
-
-                await _sharePointAuthenticationOptions.InvokeOnOnAuthenticationHandlerPost(owin, dependencyScope, principal);
-
-                return new AuthenticationTicket(identity, new AuthenticationProperties());
             }
             catch (Exception ex)
             {
@@ -122,27 +123,29 @@ namespace SharePoint.Authentication.Owin
 
         public static List<SecurityKey> GetPublicKeys()
         {
-            using var client = new WebClient();
-            var openIdConfigStr = client.DownloadString("https://login.microsoftonline.com/common/.well-known/openid-configuration");
-            var openIdConfig = JsonConvert.DeserializeObject<AADOpenIdConfig>(openIdConfigStr);
-            var jwKeys = client.DownloadString(openIdConfig.jwks_uri);
-            var response = JsonConvert.DeserializeObject<AADPublicKeys>(jwKeys);
-
-            var keys = new List<SecurityKey>();
-            foreach (var webKey in response.keys)
+            using (var client = new WebClient())
             {
-                var e = Decode(webKey.e);
-                var n = Decode(webKey.n);
+                var openIdConfigStr = client.DownloadString("https://login.microsoftonline.com/common/.well-known/openid-configuration");
+                var openIdConfig = JsonConvert.DeserializeObject<AADOpenIdConfig>(openIdConfigStr);
+                var jwKeys = client.DownloadString(openIdConfig.jwks_uri);
+                var response = JsonConvert.DeserializeObject<AADPublicKeys>(jwKeys);
 
-                var key = new RsaSecurityKey(new RSAParameters { Exponent = e, Modulus = n })
+                var keys = new List<SecurityKey>();
+                foreach (var webKey in response.keys)
                 {
-                    KeyId = webKey.kid
-                };
+                    var e = Decode(webKey.e);
+                    var n = Decode(webKey.n);
 
-                keys.Add(key);
+                    var key = new RsaSecurityKey(new RSAParameters { Exponent = e, Modulus = n })
+                    {
+                        KeyId = webKey.kid
+                    };
+
+                    keys.Add(key);
+                }
+
+                return keys;
             }
-
-            return keys;
         }
 
         private async Task<string> GetAccessToken(IDependencyScope dependencyScope, IOwinContext owin)

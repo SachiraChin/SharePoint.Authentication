@@ -55,24 +55,30 @@ namespace SharePoint.Authentication.Owin.Models
 
         private static byte[] GetSha256Bytes(string str)
         {
-            using var crypt = new SHA256Managed();
-            var crypto = crypt.ComputeHash(Encoding.ASCII.GetBytes(str));
-            return crypto;
+            using (var crypt = new SHA256Managed())
+            {
+                var crypto = crypt.ComputeHash(Encoding.ASCII.GetBytes(str));
+                return crypto;
+            }
         }
 
         private static byte[] GetSha512Bytes(string str)
         {
-            using var crypt = new SHA512Managed();
-            var crypto = crypt.ComputeHash(Encoding.ASCII.GetBytes(str));
-            return crypto;
+            using (var crypt = new SHA512Managed())
+            {
+                var crypto = crypt.ComputeHash(Encoding.ASCII.GetBytes(str));
+                return crypto;
+            }
         }
 
         // ReSharper disable once InconsistentNaming
         private static byte[] GetMD5Bytes(byte[] bytes)
         {
-            using var crypt = new MD5Cng();
-            var crypto = crypt.ComputeHash(bytes);
-            return crypto;
+            using (var crypt = new MD5Cng())
+            {
+                var crypto = crypt.ComputeHash(bytes);
+                return crypto;
+            }
         }
     }
 }

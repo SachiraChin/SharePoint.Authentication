@@ -123,16 +123,18 @@ namespace SharePoint.Authentication.Owin.Controllers
 
             try
             {
-                using var context = await highTrustTokenHelper.GetAppOnlyAuthenticatedContext(spHostUrl);
-                context.Load(context.Web);
-                await context.ExecuteQueryAsync();
+                using (var context = await highTrustTokenHelper.GetAppOnlyAuthenticatedContext(spHostUrl))
+                {
+                    context.Load(context.Web);
+                    await context.ExecuteQueryAsync();
 
-                await HighTrustPostAuthenticationAsync(context);
+                    await HighTrustPostAuthenticationAsync(context);
 
-                var callbackResponse = EmbeddedData.Get<string, ISharePointSessionProvider>("SharePoint.Authentication.Owin.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", HighTrustLandingPageUrl);
-                var response = Request.CreateResponse(HttpStatusCode.OK);
-                response.Content = new StringContent(callbackResponse, Encoding.UTF8, "text/html");
-                return response;
+                    var callbackResponse = EmbeddedData.Get<string, ISharePointSessionProvider>("SharePoint.Authentication.Owin.Templates.UserLogin.Response.html").Replace("[CallbackUrl]", HighTrustLandingPageUrl);
+                    var response = Request.CreateResponse(HttpStatusCode.OK);
+                    response.Content = new StringContent(callbackResponse, Encoding.UTF8, "text/html");
+                    return response;
+                }
             }
             catch (Exception)
             {

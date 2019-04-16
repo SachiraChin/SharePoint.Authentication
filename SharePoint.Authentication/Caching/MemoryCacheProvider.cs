@@ -33,13 +33,13 @@ namespace SharePoint.Authentication.Caching
                     switch (cachedData)
                     {
                         case NullClass _:
-                            return default;
+                            return default(T);
                         case T returnData:
                             return returnData;
                     }
                 }
 
-                if (getNewInstance == null) return default;
+                if (getNewInstance == null) return default(T);
 
                 newValue = await getNewInstance();
                 await SetAsync(key, newValue);
@@ -50,7 +50,7 @@ namespace SharePoint.Authentication.Caching
                 if (ShouldThrowExceptionOnError)
                     throw;
 
-                return default;
+                return default(T);
             }
         }
 
@@ -72,13 +72,13 @@ namespace SharePoint.Authentication.Caching
                     switch (cachedData)
                     {
                         case NullClass _:
-                            return default;
+                            return default(T);
                         case T returnData:
                             return returnData;
                     }
                 }
 
-                if (getNewInstance == null) return default;
+                if (getNewInstance == null) return default(T);
 
                 newValue = getNewInstance();
                 Set(key, newValue);
@@ -89,7 +89,7 @@ namespace SharePoint.Authentication.Caching
                 if (ShouldThrowExceptionOnError)
                     throw;
 
-                return default;
+                return default(T);
             }
         }
 

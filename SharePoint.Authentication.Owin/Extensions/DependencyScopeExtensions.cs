@@ -17,7 +17,7 @@ namespace SharePoint.Authentication.Owin.Extensions
             }
             catch (Exception)
             {
-                return default;
+                return default(T);
             }
         }
     }
