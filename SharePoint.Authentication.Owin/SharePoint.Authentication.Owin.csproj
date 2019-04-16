@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.IdentityModel.Extensions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=69c3241e6f0468ca, processorArchitecture=MSIL">
@@ -129,9 +130,6 @@
     <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
@@ -168,18 +166,19 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SharePoint.Authentication\SharePoint.Authentication.csproj">
-      <Project>{76ABD293-65E1-4F3E-ACD7-B082605D59F0}</Project>
-      <Name>SharePoint.Authentication</Name>
-    </ProjectReference>
+    <None Include="SharePoint.Authentication.Owin.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\UserLogin.Response.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\UserLogout.Response.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharePoint.Authentication\SharePoint.Authentication.csproj">
+      <Project>{76abd293-65e1-4f3e-acd7-b082605d59f0}</Project>
+      <Name>SharePoint.Authentication</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
