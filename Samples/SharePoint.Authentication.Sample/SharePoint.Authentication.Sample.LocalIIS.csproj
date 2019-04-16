@@ -8,7 +8,7 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9E1DB778-AFD0-4BA1-82FA-3AB2FEF4E427}</ProjectGuid>
+    <ProjectGuid>{EBC10612-2919-430F-9C45-D631728F8F9D}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -16,7 +16,7 @@
     <AssemblyName>SharePoint.Authentication.Sample</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44379</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -438,7 +438,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50800</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://spauthtest.com:44388/</IISUrl>
+          <IISUrl>http://localhost:50800/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
