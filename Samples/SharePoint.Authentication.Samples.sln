@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Authentication.Sample.HighTrustAppWeb", "SharePoint.Authentication.Sample.HighTrustAppWeb\SharePoint.Authentication.Sample.HighTrustAppWeb.csproj", "{E766E1AD-4401-4500-B668-F32B493CF56D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Authentication.Sample.AppWeb", "SharePoint.Authentication.Sample.AppWeb\SharePoint.Authentication.Sample.AppWeb.csproj", "{1EAADC3C-934C-4DEF-B82A-4CB8B2233BE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Authentication.Sample.HighTrustApp", "SharePoint.Authentication.Sample.HighTrustApp\SharePoint.Authentication.Sample.HighTrustApp.csproj", "{1E3B8566-84E4-4462-9C41-92C2F2C472BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Authentication.Sample.App", "SharePoint.Authentication.Sample.App\SharePoint.Authentication.Sample.App.csproj", "{1E00AB6D-076C-4033-8E60-37A02F432007}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Authentication.Sample", "SharePoint.Authentication.Sample\SharePoint.Authentication.Sample.csproj", "{9E1DB778-AFD0-4BA1-82FA-3AB2FEF4E427}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DummyWebs", "DummyWebs", "{4CDA5AEC-E910-487F-87E2-42E0C7787795}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E766E1AD-4401-4500-B668-F32B493CF56D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E766E1AD-4401-4500-B668-F32B493CF56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E766E1AD-4401-4500-B668-F32B493CF56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E766E1AD-4401-4500-B668-F32B493CF56D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EAADC3C-934C-4DEF-B82A-4CB8B2233BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EAADC3C-934C-4DEF-B82A-4CB8B2233BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EAADC3C-934C-4DEF-B82A-4CB8B2233BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EAADC3C-934C-4DEF-B82A-4CB8B2233BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3B8566-84E4-4462-9C41-92C2F2C472BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3B8566-84E4-4462-9C41-92C2F2C472BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E3B8566-84E4-4462-9C41-92C2F2C472BF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1E3B8566-84E4-4462-9C41-92C2F2C472BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E3B8566-84E4-4462-9C41-92C2F2C472BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3B8566-84E4-4462-9C41-92C2F2C472BF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1E00AB6D-076C-4033-8E60-37A02F432007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E00AB6D-076C-4033-8E60-37A02F432007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E00AB6D-076C-4033-8E60-37A02F432007}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1E00AB6D-076C-4033-8E60-37A02F432007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E00AB6D-076C-4033-8E60-37A02F432007}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E00AB6D-076C-4033-8E60-37A02F432007}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9E1DB778-AFD0-4BA1-82FA-3AB2FEF4E427}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E1DB778-AFD0-4BA1-82FA-3AB2FEF4E427}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E1DB778-AFD0-4BA1-82FA-3AB2FEF4E427}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E1DB778-AFD0-4BA1-82FA-3AB2FEF4E427}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E766E1AD-4401-4500-B668-F32B493CF56D} = {4CDA5AEC-E910-487F-87E2-42E0C7787795}
+		{1EAADC3C-934C-4DEF-B82A-4CB8B2233BE2} = {4CDA5AEC-E910-487F-87E2-42E0C7787795}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1B173A6B-3B83-4C1B-8F76-5393BF2DA56F}
+	EndGlobalSection
+EndGlobal
