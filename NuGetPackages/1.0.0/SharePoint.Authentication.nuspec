@@ -11,7 +11,7 @@
     <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Changes made to cache provider for more flexible implementations.</releaseNotes>
+    <releaseNotes>Initial release of the library. Please check project url for details and its configuration.</releaseNotes>
     <copyright>Copyright 2019</copyright>
     <tags>SharePoint SharePointOnline CSOM Authentication</tags>
   </metadata>
