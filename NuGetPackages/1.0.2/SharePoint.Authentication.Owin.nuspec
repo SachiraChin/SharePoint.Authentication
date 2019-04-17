@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/SachiraChin/SharePoint.Authentication</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Added more options to control token validation. Updated for to use new cache provider.</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>SharePoint SharePointOnline Authentication Owin WebAPI MVC</tags>
+    <dependencies>
+      <dependency id="SharePoint.Authentication" version="1.0.1" />
+    </dependencies>
+  </metadata>
+</package>
