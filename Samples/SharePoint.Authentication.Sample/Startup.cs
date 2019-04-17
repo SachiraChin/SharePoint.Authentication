@@ -52,6 +52,10 @@ namespace SharePoint.Authentication.Sample
                 TokenCacheDurationInMinutes = 10,
                 AllowNonBrowserRequests = false,
                 InjectCredentialsForHighTrust = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKeys = true,
+                ClockSkew = TimeSpan.Zero,
             };
             sharePointAuthenticationOptions.OnAuthenticationHandlerPostAuthenticate += OnAuthenticationHandlerPostAuthenticate;
             app.Use<SharePointAuthenticationMiddleware>(sharePointAuthenticationOptions);

@@ -19,6 +19,7 @@ using SharePoint.Authentication.Caching;
 using SharePoint.Authentication.Exceptions;
 using SharePoint.Authentication.Owin.Extensions;
 using SharePoint.Authentication.Owin.Models;
+// ReSharper disable UseUsingVarLocalVariable
 
 namespace SharePoint.Authentication.Owin
 {
@@ -55,39 +56,43 @@ namespace SharePoint.Authentication.Owin
 
                 using (var dependencyScope = _sharePointAuthenticationOptions.DependencyResolver.BeginScope())
                 {
-                    var token = await GetAccessToken(dependencyScope, owin);
+                    var cachedSession = await GetCachedSession(dependencyScope, owin);
 
-                    if (token == null)
+                    if (cachedSession == null)
                     {
                         throw new SharePointAuthenticationException("Context token is null");
                     }
 
                     var tokenValidationParameters = new TokenValidationParameters
                     {
-                        //// The signing key must match!
-                        ValidateIssuerSigningKey = false,
-                        //IssuerSigningKey = new InMemorySymmetricSecurityKey(secret),
-
-                        //// Validate the JWT Issuer (iss) claim
-                        ValidateIssuer = false,
-                        //ValidIssuer = issuer,
-
-                        //// Validate the JWT Audience (aud) claim
-                        ValidateAudience = false,
-                        //ValidAudience = audience,
-
                         // Validate the token expiry
                         ValidateLifetime = true,
 
                         // If you want to allow a certain amount of clock drift, set that here:
-                        ClockSkew = TimeSpan.Zero,
+                        ClockSkew = _sharePointAuthenticationOptions.ClockSkew,
 
-                        RequireSignedTokens = false,
-
-                        IssuerSigningKeys = GetPublicKeysCached(dependencyScope)
+                        RequireSignedTokens = true,
                     };
 
-                    var principal = handler.ValidateToken(token, tokenValidationParameters, out var validToken);
+                    if (_sharePointAuthenticationOptions.ValidateIssuerSigningKeys)
+                    {
+                        tokenValidationParameters.ValidateIssuerSigningKey = true;
+                        tokenValidationParameters.IssuerSigningKeys = GetPublicKeysCached(dependencyScope);
+                    }
+
+                    if (_sharePointAuthenticationOptions.ValidateIssuer)
+                    {
+                        tokenValidationParameters.ValidateIssuer = true;
+                        tokenValidationParameters.ValidIssuer = cachedSession.Issuer;
+                    }
+
+                    if (_sharePointAuthenticationOptions.ValidateAudience)
+                    {
+                        tokenValidationParameters.ValidateAudience = true;
+                        tokenValidationParameters.ValidAudience = cachedSession.Audience;
+                    }
+
+                    var principal = handler.ValidateToken(cachedSession.AccessToken, tokenValidationParameters, out var validToken);
 
                     if (!(validToken is JwtSecurityToken))
                     {
@@ -112,13 +117,12 @@ namespace SharePoint.Authentication.Owin
 
         public static List<SecurityKey> GetPublicKeysCached(IDependencyScope dependencyScope)
         {
-            const string memoryGroup = "SharePoint.Authentication.AADAccess";
-            const string key = "PublicKeys";
+            const string key = "SharePoint.Authentication.AADAccess.PublicKeys";
 
-            var cacheProvider = dependencyScope.Resolve<ICacheProvider>() ?? new MemoryCacheProvider(memoryGroup, 12 * 60, true);
-            var lockProvider = dependencyScope.Resolve<ILockProvider>() ?? new LockProvider(memoryGroup);
+            var cacheProvider = dependencyScope.Resolve<ICacheProvider>() ?? new MemoryCacheProvider();
+            var lockProvider = dependencyScope.Resolve<ILockProvider>() ?? new LockProvider();
 
-            return lockProvider.PerformActionLocked(key, () => cacheProvider.Get(key, GetPublicKeys));
+            return lockProvider.PerformActionLocked(key, () => cacheProvider.Get(key, GetPublicKeys, 12 * 60, true));
         }
 
         public static List<SecurityKey> GetPublicKeys()
@@ -148,52 +152,64 @@ namespace SharePoint.Authentication.Owin
             }
         }
 
-        private async Task<string> GetAccessToken(IDependencyScope dependencyScope, IOwinContext owin)
+        private async Task<CachedSession> GetCachedSession(IDependencyScope dependencyScope, IOwinContext owin)
         {
-            const string memoryGroup = "SharePoint.Authentication.SharePointSession";
-            var cacheProvider = dependencyScope.Resolve<ICacheProvider>() ?? new MemoryCacheProvider(memoryGroup, _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, true);
-            var lockProvider = dependencyScope.Resolve<ILockProvider>() ?? new LockProvider(memoryGroup);
+            var cacheProvider = dependencyScope.Resolve<ICacheProvider>() ?? new MemoryCacheProvider();
+            var lockProvider = dependencyScope.Resolve<ILockProvider>() ?? new LockProvider();
 
             async Task<CachedSession> GetNewAccessToken(Guid sessionId)
             {
-                try
-                {
-                    var sharePointSessionProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
-                    var sharePointSession = await sharePointSessionProvider.GetSharePointSession(sessionId);
+                var sharePointSessionProvider = dependencyScope.Resolve<ISharePointSessionProvider>();
+                var sharePointSession = await sharePointSessionProvider.GetSharePointSession(sessionId);
 
-                    if (sharePointSession == null)
-                        return null;
-
-                    var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
-                    var contextTokenObj = lowTrustTokenHelper.ReadAndValidateContextToken(sharePointSession.ContextToken, sharePointSession.ContextTokenAuthority);
-
-                    if (contextTokenObj.ValidTo < DateTimeOffset.Now)
-                        return null;
-
-                    var accessTokenResponse = lowTrustTokenHelper.GetAccessToken(contextTokenObj, new Uri(sharePointSession.SharePointHostWebUrl).Authority);
-                    var cachedSession = new CachedSession()
-                    {
-                        AccessToken = accessTokenResponse.AccessToken,
-                        SharePointHostWebUrl = sharePointSession.SharePointHostWebUrl,
-                    };
-
-                    if (!_sharePointAuthenticationOptions.InjectCredentialsForHighTrust) return cachedSession;
-
-                    var highTrustCredentials = await sharePointSessionProvider.GetHighTrustCredentials(sharePointSession.SharePointHostWebUrl);
-
-                    if (highTrustCredentials == null) return cachedSession;
-
-                    cachedSession.HighTrustClientId = highTrustCredentials.ClientId;
-                    cachedSession.HighTrustClientSecret = highTrustCredentials.ClientSecret;
-
-                    return cachedSession;
-                }
-                catch (Exception)
-                {
+                if (sharePointSession == null)
                     return null;
+
+                var lowTrustTokenHelper = dependencyScope.Resolve<LowTrustTokenHelper>();
+                var contextTokenObj = lowTrustTokenHelper.ReadAndValidateContextToken(sharePointSession.ContextToken, sharePointSession.ContextTokenAuthority);
+
+                if (contextTokenObj.ValidTo < DateTimeOffset.Now)
+                    return null;
+
+                var spHostUrl = new Uri(sharePointSession.SharePointHostWebUrl);
+                var accessTokenResponse = lowTrustTokenHelper.GetAccessToken(contextTokenObj, spHostUrl.Authority);
+
+                var cachedSession = new CachedSession()
+                {
+                    AccessToken = accessTokenResponse.AccessToken,
+                    SharePointHostWebUrl = sharePointSession.SharePointHostWebUrl,
+                };
+
+                if (_sharePointAuthenticationOptions.ValidateAudience || _sharePointAuthenticationOptions.ValidateIssuer)
+                {
+                    var realm = lowTrustTokenHelper.GetRealmFromTargetUrl(spHostUrl);
+                    if (_sharePointAuthenticationOptions.ValidateAudience)
+                    {
+                        var audience = lowTrustTokenHelper.GetFormattedPrincipal(TokenHelper.SharePointPrincipal, spHostUrl.Authority, realm);
+                        cachedSession.Audience = audience;
+                    }
+
+                    if (_sharePointAuthenticationOptions.ValidateIssuer)
+                    {
+                        var issuer = lowTrustTokenHelper.GetFormattedPrincipal(TokenHelper.AcsPrincipalName, null, realm);
+                        cachedSession.Issuer = issuer;
+                    }
                 }
+
+
+                if (!_sharePointAuthenticationOptions.InjectCredentialsForHighTrust) return cachedSession;
+
+                var highTrustCredentials = await sharePointSessionProvider.GetHighTrustCredentials(sharePointSession.SharePointHostWebUrl);
+
+                if (highTrustCredentials == null) return cachedSession;
+
+                cachedSession.HighTrustClientId = highTrustCredentials.ClientId;
+                cachedSession.HighTrustClientSecret = highTrustCredentials.ClientSecret;
+
+                return cachedSession;
             }
 
+            const string memoryGroup = "SharePoint.Authentication.SharePointSession";
             var cookieValues = GetCookieValues(owin, "session-id");
             foreach (var cookieValue in cookieValues)
             {
@@ -203,13 +219,14 @@ namespace SharePoint.Authentication.Owin
                 }
 
                 var cacheKey = sessionId.ToString("N");
-                var session = await lockProvider.PerformActionLockedAsync(cacheKey,() => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId)));
+                var session = await lockProvider.PerformActionLockedAsync($"{memoryGroup}.{cacheKey}",
+                    () => cacheProvider.GetAsync(cacheKey, () => GetNewAccessToken(sessionId), _sharePointAuthenticationOptions.TokenCacheDurationInMinutes, false));
 
                 if (string.IsNullOrWhiteSpace(session?.AccessToken)) continue;
 
                 owin.Set("CachedSession", session);
 
-                return session.AccessToken;
+                return session;
             }
 
             return null;

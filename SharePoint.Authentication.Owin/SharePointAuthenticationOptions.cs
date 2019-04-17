@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http.Dependencies;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +18,10 @@ namespace SharePoint.Authentication.Owin
         public bool InjectCredentialsForHighTrust { get; set; }
 
         public event AuthenticationHandlerPostAuthenticateDelegate OnAuthenticationHandlerPostAuthenticate;
+        public bool ValidateIssuerSigningKeys { get; set; } = true;
+        public bool ValidateIssuer { get; set; } = true;
+        public bool ValidateAudience { get; set; } = true;
+        public TimeSpan ClockSkew { get; set; } = TimeSpan.Zero;
 
         public SharePointAuthenticationOptions() : base("SharePointAuthentication")
         {

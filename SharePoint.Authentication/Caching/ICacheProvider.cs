@@ -5,14 +5,10 @@ namespace SharePoint.Authentication.Caching
 {
     public interface ICacheProvider
     {
-        string MemoryGroup { get; }
-        int CacheExpireInMinutes { get; }
-        bool ShouldThrowExceptionOnError { get; }
-
-        Task<T> GetAsync<T>(string key, Func<Task<T>> getNewInstance, bool force = false);
-        T Get<T>(string key, Func<T> getNewInstance, bool force = false);
-        void Remove(string key);
-        Task SetAsync<T>(string key, T value);
-        void Set<T>(string key, T value);
+        Task<T> GetAsync<T>(string key, Func<Task<T>> getNewInstance, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true, bool force = false);
+        T Get<T>(string key, Func<T> getNewInstance, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true, bool force = false);
+        void Remove(string key, bool shouldThrowExceptionOnError = true);
+        Task SetAsync<T>(string key, T value, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true);
+        void Set<T>(string key, T value, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true);
     }
 }

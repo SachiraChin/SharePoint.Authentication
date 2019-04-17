@@ -12,5 +12,7 @@ namespace SharePoint.Authentication.Owin.Models
         public string SharePointHostWebUrl { get; set; }
         public string HighTrustClientId { get; set; }
         public string HighTrustClientSecret { get; set; }
+        public string Audience { get; set; }
+        public string Issuer { get; set; }
     }
 }

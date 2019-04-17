@@ -4,30 +4,21 @@ using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
 {
-    public class MemoryCacheProvider : BaseCacheExtension, ICacheProvider
+    public class MemoryCacheProvider : ICacheProvider
     {
-        public MemoryCacheProvider(string memoryGroup, int cacheExpireInMinutes, bool shouldThrowExceptionOnError) : base(memoryGroup)
-        {
-            CacheExpireInMinutes = cacheExpireInMinutes;
-            ShouldThrowExceptionOnError = shouldThrowExceptionOnError;
-        }
-
-        public int CacheExpireInMinutes { get; }
-        public bool ShouldThrowExceptionOnError { get; }
-
-        public virtual async Task<T> GetAsync<T>(string key, Func<Task<T>> getNewInstance, bool force = false)
+        public virtual async Task<T> GetAsync<T>(string key, Func<Task<T>> getNewInstance, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true, bool force = false)
         {
             try
             {
                 T newValue;
-                if (force)
+                if (force && getNewInstance != null)
                 {
                     newValue = await getNewInstance();
-                    await SetAsync(key, newValue);
+                    await SetAsync(key, newValue, cacheExpireInMinutes, shouldThrowExceptionOnError);
                     return newValue;
                 }
 
-                var cachedData = MemoryCache.Default.Get( GetKey(key));
+                var cachedData = MemoryCache.Default.Get(key);
                 if (cachedData != null)
                 {
                     switch (cachedData)
@@ -42,19 +33,19 @@ namespace SharePoint.Authentication.Caching
                 if (getNewInstance == null) return default(T);
 
                 newValue = await getNewInstance();
-                await SetAsync(key, newValue);
+                await SetAsync(key, newValue, cacheExpireInMinutes, shouldThrowExceptionOnError);
                 return newValue;
             }
             catch (Exception)
             {
-                if (ShouldThrowExceptionOnError)
+                if (shouldThrowExceptionOnError)
                     throw;
 
                 return default(T);
             }
         }
 
-        public T Get<T>(string key, Func<T> getNewInstance, bool force = false)
+        public T Get<T>(string key, Func<T> getNewInstance, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true, bool force = false)
         {
             try
             {
@@ -62,11 +53,11 @@ namespace SharePoint.Authentication.Caching
                 if (force)
                 {
                     newValue = getNewInstance();
-                    Set(key, newValue);
+                    Set(key, newValue, cacheExpireInMinutes, shouldThrowExceptionOnError);
                     return newValue;
                 }
 
-                var cachedData = MemoryCache.Default.Get(GetKey(key));
+                var cachedData = MemoryCache.Default.Get(key);
                 if (cachedData != null)
                 {
                     switch (cachedData)
@@ -81,35 +72,34 @@ namespace SharePoint.Authentication.Caching
                 if (getNewInstance == null) return default(T);
 
                 newValue = getNewInstance();
-                Set(key, newValue);
+                Set(key, newValue, cacheExpireInMinutes, shouldThrowExceptionOnError);
                 return newValue;
             }
             catch (Exception)
             {
-                if (ShouldThrowExceptionOnError)
+                if (shouldThrowExceptionOnError)
                     throw;
 
                 return default(T);
             }
         }
 
-        public virtual void Remove(string key)
+        public virtual void Remove(string key, bool shouldThrowExceptionOnError = true)
         {
             try
             {
-                var internalKey = GetKey(key);
-                MemoryCache.Default.Remove(internalKey);
+                MemoryCache.Default.Remove(key);
             }
             catch (Exception)
             {
-                if (ShouldThrowExceptionOnError)
+                if (shouldThrowExceptionOnError)
                     throw;
 
                 // ignored   
             }
         }
 
-        public Task SetAsync<T>(string key, T value)
+        public Task SetAsync<T>(string key, T value, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true)
         {
             try
             {
@@ -121,15 +111,15 @@ namespace SharePoint.Authentication.Caching
 
                 var cip = new CacheItemPolicy()
                 {
-                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(CacheExpireInMinutes),
+                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(cacheExpireInMinutes),
                 };
-                MemoryCache.Default.Set(GetKey(key), setValue, cip);
+                MemoryCache.Default.Set(key, setValue, cip);
 
                 return Task.FromResult(true);
             }
             catch (Exception)
             {
-                if (ShouldThrowExceptionOnError)
+                if (shouldThrowExceptionOnError)
                     throw;
 
                 // ignored
@@ -137,7 +127,7 @@ namespace SharePoint.Authentication.Caching
             }
         }
 
-        public void Set<T>(string key, T value)
+        public void Set<T>(string key, T value, int cacheExpireInMinutes, bool shouldThrowExceptionOnError = true)
         {
             try
             {
@@ -149,13 +139,13 @@ namespace SharePoint.Authentication.Caching
 
                 var cip = new CacheItemPolicy()
                 {
-                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(CacheExpireInMinutes),
+                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(cacheExpireInMinutes),
                 };
-                MemoryCache.Default.Set(GetKey(key), setValue, cip);
+                MemoryCache.Default.Set(key, setValue, cip);
             }
             catch (Exception)
             {
-                if (ShouldThrowExceptionOnError)
+                if (shouldThrowExceptionOnError)
                     throw;
 
                 // ignored

@@ -694,7 +694,7 @@ namespace SharePoint.Authentication
 
         private const string AuthorizationPage = "_layouts/15/OAuthAuthorize.aspx";
         private const string RedirectPage = "_layouts/15/AppRedirect.aspx";
-        private const string AcsPrincipalName = "00000001-0000-0000-c000-000000000000";
+        public const string AcsPrincipalName = "00000001-0000-0000-c000-000000000000";
         private const string AcsMetadataEndPointRelativeUrl = "metadata/json/1";
         private const string S2SProtocol = "OAuth2";
         private const string DelegationIssuance = "DelegationIssuance1.0";
@@ -756,7 +756,7 @@ namespace SharePoint.Authentication
             return Path.Combine(GetAcsGlobalEndpointUrl(), AcsMetadataEndPointRelativeUrl);
         }
 
-        private string GetFormattedPrincipal(string principalName, string hostName, string realm)
+        public string GetFormattedPrincipal(string principalName, string hostName, string realm)
         {
             if (!String.IsNullOrEmpty(hostName))
             {

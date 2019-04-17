@@ -16,7 +16,7 @@
     <AssemblyName>SharePoint.Authentication.Sample</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44379</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -130,12 +130,6 @@
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="SharePoint.Authentication, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharePoint.Authentication.1.0.0\lib\net461\SharePoint.Authentication.dll</HintPath>
-    </Reference>
-    <Reference Include="SharePoint.Authentication.Owin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharePoint.Authentication.Owin.1.0.0\lib\net461\SharePoint.Authentication.Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -420,6 +414,16 @@
       <DependentUpon>201904131320419_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SharePoint.Authentication.Owin\SharePoint.Authentication.Owin.csproj">
+      <Project>{a04004b2-8bbd-4394-8d83-8f4fbb400567}</Project>
+      <Name>SharePoint.Authentication.Owin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SharePoint.Authentication\SharePoint.Authentication.csproj">
+      <Project>{76abd293-65e1-4f3e-acd7-b082605d59f0}</Project>
+      <Name>SharePoint.Authentication</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -438,7 +442,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50800</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50800/</IISUrl>
+          <IISUrl>https://spauthtest.com:44388/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
