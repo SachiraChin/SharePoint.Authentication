@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Dependencies;
+using SharePoint.Authentication.Caching;
 
 namespace SharePoint.Authentication.Owin.Extensions
 {
-    internal static class DependencyScopeExtensions
+    internal static class DependencyExtensions
     {
         internal static T Resolve<T>(this IDependencyScope dependencyScope)
         {

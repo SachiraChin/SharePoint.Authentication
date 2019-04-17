@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using SharePoint.Authentication.Owin;
 using SharePoint.Authentication.Owin.Extensions;
 using SharePoint.Authentication.Owin.Models;
+using Unity.AspNet.WebApi;
 
 namespace SharePoint.Authentication.Sample.Controllers
 {
@@ -30,6 +31,9 @@ namespace SharePoint.Authentication.Sample.Controllers
             {
                 credentials = HighTrustCredentials.GenerateUniqueHighTrustCredentials(spHostUrl, "90601b8750f84a699771379aa944fca1", "74adaa2afa4946ce981d8fe212543752");
                 await _sharePointSessionProvider.SaveHighTrustCredentials(credentials);
+
+                await this.Request.ResetCacheForCurrentSession(new UnityDependencyResolver(UnityConfig.Container));
+
                 return View(credentials);
             }
 

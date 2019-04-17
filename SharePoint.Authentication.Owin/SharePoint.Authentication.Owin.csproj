@@ -147,7 +147,7 @@
     <Compile Include="Controllers\SharePointLoginController.cs" />
     <Compile Include="Exceptions\CanNotRedirectException.cs" />
     <Compile Include="Exceptions\SharePointHostUrlNotAvailableException.cs" />
-    <Compile Include="Extensions\DependencyScopeExtensions.cs" />
+    <Compile Include="Extensions\DependencyExtensions.cs" />
     <Compile Include="Extensions\HttpRequestExtension.cs" />
     <Compile Include="Extensions\TokenHelperExtensions.cs" />
     <Compile Include="Helpers\EmbeddedData.cs" />
