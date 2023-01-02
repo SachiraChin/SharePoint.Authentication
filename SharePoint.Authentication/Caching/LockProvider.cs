@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
+﻿using AsyncKeyedLock;
+using System;
 using System.Threading.Tasks;
 
 namespace SharePoint.Authentication.Caching
@@ -9,35 +8,27 @@ namespace SharePoint.Authentication.Caching
     {
         // ReSharper disable once StaticMemberInGenericType
         // This locked shared by all instances of this class. Staticness and concurrency is expected and handled
-        private static readonly ConcurrentDictionary<string, SemaphoreSlim> StaticKeyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private static readonly AsyncKeyedLocker<string> StaticKeyLocks = new AsyncKeyedLocker<string>(o =>
+        {
+            o.PoolSize = 20;
+            o.PoolInitialFill = 1;
+        });
 
-        public ConcurrentDictionary<string, SemaphoreSlim> KeyLocks => StaticKeyLocks;
+        public AsyncKeyedLocker<string> KeyLocks => StaticKeyLocks;
 
         public async Task<T> PerformActionLockedAsync<T>(string key, Func<Task<T>> action)
         {
-            var keyLock = KeyLocks.GetOrAdd(key, x => new SemaphoreSlim(1, 1));
-            await keyLock.WaitAsync();
-            try
+            using (await KeyLocks.LockAsync(key).ConfigureAwait(false))
             {
                 return await action();
-            }
-            finally
-            {
-                keyLock.Release();
             }
         }
 
         public T PerformActionLocked<T>(string key, Func<T> action)
         {
-            var keyLock = KeyLocks.GetOrAdd(key, x => new SemaphoreSlim(1, 1));
-            keyLock.Wait();
-            try
+            using (KeyLocks.Lock(key))
             {
                 return action();
-            }
-            finally
-            {
-                keyLock.Release();
             }
         }
     }
