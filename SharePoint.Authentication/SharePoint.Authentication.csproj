@@ -33,8 +33,8 @@
     <LangVersion>default</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncKeyedLock, Version=6.1.0.0, Culture=neutral, PublicKeyToken=c6dde91429ba0f2f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AsyncKeyedLock.6.1.0\lib\netstandard2.0\AsyncKeyedLock.dll</HintPath>
+    <Reference Include="AsyncKeyedLock, Version=6.1.1.0, Culture=neutral, PublicKeyToken=c6dde91429ba0f2f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncKeyedLock.6.1.1\lib\netstandard2.0\AsyncKeyedLock.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
